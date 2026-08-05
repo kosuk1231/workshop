@@ -16,11 +16,11 @@
 var SHEET_ID = '';
 
 var SHEET_NAME = '응답';
-var HEADERS = ['타임스탬프', 'id', '이름', '참석여부', '도착일', '도착시각', '교통편', '승차역', '열차출발', '메모'];
+var HEADERS = ['타임스탬프', 'id', '이름', '참석여부', '도착일', '교통편', '열차', '승차역', '열차출발', '도착역', '도착시각', '메모'];
 
 var COL_ID = 2;   // B
-var COL_ARR = 6;  // F 도착시각
 var COL_DEP = 9;  // I 열차출발
+var COL_ARR = 11; // K 도착시각
 
 var ALLOWED = { full: 1, part: 1, tbd: 1, no: 1 };
 
@@ -37,7 +37,8 @@ function getSheet_() {
     sh.setFrozenRows(1);
     sh.setColumnWidth(1, 150);
     sh.setColumnWidth(3, 90);
-    sh.setColumnWidth(10, 260);
+    sh.setColumnWidth(7, 200);
+    sh.setColumnWidth(12, 260);
   }
 
   // 시각 칸이 날짜로 바뀌지 않게 텍스트 서식 고정
@@ -84,11 +85,13 @@ function doGet() {
           name: asText_(r[2]),
           status: ALLOWED[asText_(r[3])] ? asText_(r[3]) : 'tbd',
           day: asText_(r[4]),
-          arr: asTime_(r[5]),
-          transport: asText_(r[6]),
+          transport: asText_(r[5]),
+          train: asText_(r[6]),
           from: asText_(r[7]),
           dep: asTime_(r[8]),
-          note: asText_(r[9]),
+          to: asText_(r[9]),
+          arr: asTime_(r[10]),
+          note: asText_(r[11]),
           at: r[0] instanceof Date ? r[0].toISOString() : asText_(r[0])
         });
       }
@@ -133,10 +136,12 @@ function doPost(e) {
       asText_(d.name),
       asText_(d.status),
       asText_(d.day),
-      asTime_(d.arr),
       asText_(d.transport),
+      asText_(d.trainLabel) || asText_(d.train),
       asText_(d.from),
       asTime_(d.dep),
+      asText_(d.to),
+      asTime_(d.arr),
       asText_(d.note)
     ];
 
@@ -162,8 +167,9 @@ function setup() {
 /** 저장·조회가 잘 되는지 편집기에서 확인하는 용도 */
 function selfTest() {
   var res = doPost({ postData: { contents: JSON.stringify({
-    id: 999, name: '테스트', status: 'part', day: '1일차', arr: '17:40',
-    transport: '기차', from: '용산역', dep: '15:20', note: '자체 점검'
+    id: 999, name: '테스트', status: 'part', day: '1일차', transport: '기차',
+    train: '1283', trainLabel: '무궁화 1283 · 용산 16:25 → 광천 18:55',
+    from: '용산역', dep: '16:25', to: '광천역', arr: '18:55', note: '자체 점검'
   }) } });
   Logger.log(res.getContent());
   Logger.log(doGet().getContent());
