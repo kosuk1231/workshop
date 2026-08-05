@@ -242,6 +242,11 @@ a{color:var(--blue);text-decoration:none}
 .sync.ok{color:#136050} .sync.ok i{background:var(--teal)}
 .sync.bad{color:#8E2E3E} .sync.bad i{background:var(--rose)}
 .sync.wait{color:#255E96} .sync.wait i{background:var(--blue)}
+.todo{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 18px}
+.todo span{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;
+  padding:7px 13px;border-radius:999px;background:rgba(224,118,60,.16);color:#8A4318}
+.todo span b{font-family:var(--mono);font-weight:600}
+.todo span.done{background:rgba(30,138,112,.14);color:#136050}
 .tt{border-radius:18px;padding:16px 17px 14px;margin:0 0 20px;
   background:linear-gradient(115deg,rgba(80,145,225,.16),rgba(45,190,155,.12));
   border:1px solid rgba(255,255,255,.6)}
@@ -437,7 +442,9 @@ a{color:var(--blue);text-decoration:none}
     <span>본인 항목의 <b>수정</b>을 눌러 참석 여부와 도착·열차 시각을 직접 입력해 주세요.</span>
     <span class="sync" id="sync"><i></i>준비 중</span>
     <button type="button" class="hbtn" id="actBtn" hidden>새로고침</button>
+    <button type="button" class="hbtn" id="wipeBtn" hidden>이 기기 보관분 지우기</button>
   </div>
+  <div id="todo"></div>
   <div id="tally" class="tally"></div>
   <div id="late"></div>
   <div id="trains"></div>
@@ -456,7 +463,7 @@ a{color:var(--blue);text-decoration:none}
    Apps Script 웹앱 URL. 배포 후 /exec 로 끝나는 주소를 붙여넣으세요.
    비워 두면 이 기기(브라우저)에만 저장됩니다.
    ─────────────────────────────────────────────────────────── */
-var API_URL = "https://script.google.com/macros/s/AKfycby55k32ubm761ZmLhYsunUmhoLYWJSaSkPDMQvCuDPzm40pCO4lXK_pFboGLFwjqPyZ/exec";
+var API_URL = "";
 
 var KEY   = "sasw-workshop-2026";
 var LABEL = { full:"전일정 참석", part:"부분 참석", tbd:"확인 중", no:"불참" };
@@ -502,6 +509,7 @@ function trainText(t){
 /* ── 명단 ──
    id는 회신 저장의 기준입니다. 한 번 정한 뒤에는 바꾸지 마세요. */
 var BASE = [
+ /* 전일정 참석 8명 — 승차역 회신 대기 */
  {id:1, name:"김아래미", group:"위원장",   org:"서울여자대학교",              title:"교수",         status:"full"},
  {id:2, name:"이상현",   group:"부위원장", org:"신목종합사회복지관",          title:"부장",         status:"full"},
  {id:3, name:"김유리",   group:"운영위원", org:"서대문구재가노인복지기관",    title:"관장",         status:"full"},
@@ -510,12 +518,18 @@ var BASE = [
  {id:6, name:"조상우",   group:"전문위원", org:"태화해뜨는샘",                title:"사무국장",     status:"full"},
  {id:7, name:"고석우",   group:"협회",     org:"서울특별시사회복지사협회",    title:"과장",         status:"full"},
  {id:8, name:"이재중",   group:"협회",     org:"서울특별시사회복지사협회",    title:"사회복지사",   status:"full"},
- {id:9, name:"이상표",   group:"운영위원", org:"시립고덕양로원",              title:"원장",         status:"part", day:"1일차", transport:"자차", note:"오후 참석 · 투표 게시글 댓글로 회신"},
- {id:10,name:"김민재",   group:"운영위원", org:"파라다이스복지재단",          title:"매니저(과장)", status:"part", day:"1일차", transport:"자차", note:"도착 시각 확인 필요"},
- {id:11,name:"황흥기",   group:"전문위원", org:"넥스트임팩트",                title:"대표",         status:"part", day:"1일차", transport:"기차", note:"20시 이후 도착 희망"},
- {id:12,name:"정선영",   group:"전문위원", org:"신월종합사회복지관",          title:"부장",         status:"part", day:"1일차", transport:"기차", note:"18시 이후 도착 희망"},
- {id:13,name:"노혜진",   group:"전문위원", org:"강서대학교",                  title:"교수",         status:"part", day:"1일차", transport:"기차", note:""},
- {id:14,name:"심휘선",   group:"전문위원", org:"종로노인종합복지관",          title:"부장",         status:"part", day:"1일차", transport:"기차", note:""},
+
+ /* 자차 참석 2명 — 도착 시각 회신 대기 */
+ {id:9, name:"이상표",   group:"운영위원", org:"시립고덕양로원",              title:"원장",         status:"part", day:"1일차", transport:"자차", note:"오후 참석"},
+ {id:10,name:"김민재",   group:"운영위원", org:"파라다이스복지재단",          title:"매니저(과장)", status:"part", day:"1일차", transport:"자차"},
+
+ /* 후발 참석 4명 — 열차 편성 회신 대기 (광천역 도착) */
+ {id:11,name:"황흥기",   group:"전문위원", org:"넥스트임팩트",                title:"대표",         status:"part", day:"1일차", transport:"기차"},
+ {id:12,name:"정선영",   group:"전문위원", org:"신월종합사회복지관",          title:"부장",         status:"part", day:"1일차", transport:"기차"},
+ {id:13,name:"노혜진",   group:"전문위원", org:"강서대학교",                  title:"교수",         status:"part", day:"1일차", transport:"기차"},
+ {id:14,name:"심휘선",   group:"전문위원", org:"종로노인종합복지관",          title:"부장",         status:"part", day:"1일차", transport:"기차"},
+
+ /* 미회신 · 불참 */
  {id:15,name:"정순영",   group:"운영위원", org:"관악구지역사회보장협의체",    title:"사무국장",     status:"tbd"},
  {id:16,name:"오순희",   group:"전문위원", org:"양천거점형 우리동네키움센터", title:"센터장",       status:"no"},
  {id:17,name:"조소연",   group:"전문위원", org:"사회복지연구소 마실",         title:"공동대표",     status:"no"}
@@ -554,27 +568,26 @@ function status(kind, text){
   el.innerHTML = '<i></i>' + esc(text);
 }
 
-/* ── 로컬 캐시 ── */
+/* ── 로컬 보관 ──
+   서버가 유일한 기준입니다. 로컬에는 '서버 저장에 실패한 회신'만 남깁니다.
+   서버에 저장이 확인되면 로컬 사본은 즉시 버립니다. 이래야 값이 꼬이지 않습니다. */
+var PENDING = {};
+var LOCAL_ONLY = false;
+
 function baseOf(id){
   for(var i=0;i<BASE.length;i++) if(BASE[i].id === id) return BASE[i];
   return null;
 }
-function changed(p){
-  var b = baseOf(p.id); if(!b) return true;
-  for(var i=0;i<FIELDS.length;i++){
-    var f = FIELDS[i];
-    if(String(p[f] || "") !== String(b[f] || "")) return true;
-  }
-  return false;
-}
 function saveLocal(){
   try{
-    var out = {};
+    var out = {}, any = false;
     people.forEach(function(p){
-      if(!changed(p)) return;                /* 원본과 같으면 저장하지 않음 */
-      var m = {}; FIELDS.forEach(function(f){ m[f] = p[f]; }); out[String(p.id)] = m;
+      if(!PENDING[p.id]) return;
+      var m = {}; FIELDS.forEach(function(f){ m[f] = p[f]; });
+      out[String(p.id)] = m; any = true;
     });
-    localStorage.setItem(KEY, JSON.stringify(out));
+    if(any) localStorage.setItem(KEY, JSON.stringify(out));
+    else localStorage.removeItem(KEY);
     return true;
   }catch(e){ return false; }
 }
@@ -582,16 +595,21 @@ function loadLocal(skip){
   try{
     var raw = localStorage.getItem(KEY); if(!raw) return false;
     var saved = JSON.parse(raw), hit = false;
-    people.forEach(function(p){
-      if(skip && skip[p.id]) return;          /* 서버 값이 있으면 건드리지 않음 */
-      var m = saved[String(p.id)]; if(!m) return;
-      FIELDS.forEach(function(f){ if(m[f]!==undefined) p[f] = m[f]; });
-      hit = true;
+    Object.keys(saved).forEach(function(k){
+      var id = Number(k);
+      if(skip && skip[id]){ delete PENDING[id]; return; }   /* 서버에 있으면 로컬 사본 폐기 */
+      var p = byId(id); if(!p) return;
+      FIELDS.forEach(function(f){ if(saved[k][f] !== undefined) p[f] = saved[k][f]; });
+      PENDING[id] = 1; hit = true;
     });
     return hit;
   }catch(e){ return false; }
 }
-function clearLocal(){ try{ localStorage.removeItem(KEY); }catch(e){} }
+function clearLocal(){
+  PENDING = {};
+  try{ localStorage.removeItem(KEY); }catch(e){}
+}
+function pendingCount(){ return Object.keys(PENDING).length; }
 
 /* ── 서버 ── */
 function applyRows(rows){
@@ -614,11 +632,12 @@ function applyRows(rows){
 
 function pull(quiet){
   if(!API_URL){
+    LOCAL_ONLY = true;
     var had = loadLocal();
     render();
     status(had ? "wait" : "", had ? "이 기기에만 저장됨" : "회신 대기");
     $("#actBtn").hidden = !had;
-    $("#actBtn").textContent = "수정 내용 되돌리기";
+    $("#actBtn").textContent = "입력 내용 지우기";
     return;
   }
   if(!quiet) status("wait", "불러오는 중");
@@ -632,26 +651,28 @@ function pull(quiet){
       var n = applyRows(j.rows);
       var have = {};
       (j.rows || []).forEach(function(r){ have[Number(r.id)] = 1; });
-      var extra = loadLocal(have);            /* 서버에 없는 사람만 보완 */
+      loadLocal(have);                        /* 서버에 없는 미전송분만 보완 */
       saveLocal();
       render();
-      status("ok", n ? n + "명 회신 반영" + (extra ? " · 미전송 있음" : "") : "회신 없음");
+      var pend = pendingCount();
+      status("ok", (n ? n + "명 회신 반영" : "회신 없음") + (pend ? " · 미전송 " + pend + "건" : ""));
     })
     .catch(function(){
       people = fresh();
       var had = loadLocal();
       render();
-      status("bad", had ? "연결 실패 · 저장본 표시" : "연결 실패");
+      status("bad", had ? "연결 실패 · 미전송 " + pendingCount() + "건" : "연결 실패");
     });
 }
 
 function push(p){
-  saveLocal();
   if(!API_URL){
+    PENDING[p.id] = 1;
+    saveLocal();
     render();
     toast(p.name + " 님 회신을 이 기기에 저장했습니다");
     $("#actBtn").hidden = false;
-    $("#actBtn").textContent = "수정 내용 되돌리기";
+    $("#actBtn").textContent = "입력 내용 지우기";
     status("wait", "이 기기에만 저장됨");
     return;
   }
@@ -674,14 +695,16 @@ function push(p){
       var j = null;
       try{ j = JSON.parse(txt); }catch(e){}
       if(!j || !j.ok) throw new Error(j && j.error || "저장 응답을 확인할 수 없습니다");
+      delete PENDING[p.id];                   /* 서버가 받았으니 로컬 사본 폐기 */
+      saveLocal();
       toast(p.name + " 님 회신을 저장했습니다");
       setTimeout(function(){ pull(true); }, 400);
     })
-    .catch(function(err){
+    .catch(function(){
+      PENDING[p.id] = 1;
+      saveLocal();
       toast("서버 저장 실패 · 이 기기에 보관했습니다. 새로고침을 눌러 다시 시도해 주세요.");
-      status("bad", "저장 실패 · 미전송");
-      window.__saswPending = window.__saswPending || {};
-      window.__saswPending[p.id] = 1;
+      status("bad", "저장 실패 · 미전송 " + pendingCount() + "건");
     });
 }
 
@@ -704,6 +727,8 @@ function bits(p){
       a.push(t ? trainText(t) : "열차 선택 필요");
     } else if(p.arr){
       a.push(p.arr + " 도착 예정");
+    } else if(p.transport === "자차" || p.transport === "기타"){
+      a.push("도착 시각 미정");
     }
   }
   if(p.note) a.push(p.note);
@@ -760,6 +785,19 @@ function render(){
   } else {
     $("#late").innerHTML = "";
   }
+
+  /* 예매를 위해 아직 받아야 할 회신 */
+  var needBoard = people.filter(function(p){ return p.status==="full" && !train(p.train); }).length;
+  var needTrain = people.filter(function(p){ return p.status==="part" && p.transport==="기차" && !train(p.train); }).length;
+  var needTime  = people.filter(function(p){ return p.status==="part" && p.transport!=="기차" && !p.arr; }).length;
+  var chip = function(n, label){
+    return '<span'+(n?'':' class="done"')+'>'+esc(label)+' <b>'+n+'</b>명</span>';
+  };
+  $("#todo").innerHTML = '<div class="todo">'+
+    chip(needBoard,"승차역 회신")+chip(needTrain,"열차 편성 회신")+chip(needTime,"도착 시각 회신")+
+    '</div>';
+
+  $("#wipeBtn").hidden = !(API_URL && pendingCount());
 
   renderTrains();
 
@@ -881,13 +919,20 @@ document.getElementById("s4").addEventListener("click", function(e){
 
 $("#actBtn").addEventListener("click", function(){
   if(API_URL){ pull(); return; }
-  if(!confirm("이 기기에 저장한 수정 내용을 모두 지우고 처음 상태로 되돌립니다.")) return;
+  if(!confirm("이 기기에 저장한 입력 내용을 지우고 처음 상태로 되돌립니다.")) return;
   clearLocal();
   people = fresh();
   render();
   $("#actBtn").hidden = true;
   status("", "회신 대기");
   toast("처음 상태로 되돌렸습니다");
+});
+
+$("#wipeBtn").addEventListener("click", function(){
+  if(!confirm("이 기기에 남은 미전송 입력을 지웁니다. 서버에 저장된 회신은 그대로 있습니다.")) return;
+  clearLocal();
+  toast("이 기기 보관분을 지웠습니다");
+  pull();
 });
 
 render();

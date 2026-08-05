@@ -243,6 +243,39 @@ function setup() {
   Logger.log('머리글: ' + (missing.length ? '누락 ' + missing.join(', ') : '정상'));
 }
 
+/**
+ * 회신을 전부 지우고 처음 상태로 되돌립니다. (머리글은 남습니다)
+ * 테스트 데이터가 섞여 값이 꼬였을 때 한 번 실행하세요.
+ */
+function reset() {
+  var sh = getSheet_();
+  var last = sh.getLastRow();
+  if (last > 1) {
+    sh.getRange(2, 1, last - 1, sh.getLastColumn()).clearContent();
+    Logger.log('회신 ' + (last - 1) + '건을 지웠습니다.');
+  } else {
+    Logger.log('지울 회신이 없습니다.');
+  }
+  Logger.log('페이지에서 새로고침을 누르면 명단이 처음 상태로 돌아옵니다.');
+}
+
+/** 특정 위원의 회신 한 건만 지웁니다. removeOne(12) 처럼 id를 넣어 실행하세요. */
+function removeOne(id) {
+  var sh = getSheet_();
+  var map = headerMap_(sh);
+  var last = sh.getLastRow();
+  if (!map[H.id] || last < 2) { Logger.log('회신이 없습니다.'); return; }
+  var ids = sh.getRange(2, map[H.id], last - 1, 1).getValues();
+  for (var i = 0; i < ids.length; i++) {
+    if (Number(ids[i][0]) === Number(id)) {
+      sh.deleteRow(i + 2);
+      Logger.log('id ' + id + ' 회신을 지웠습니다.');
+      return;
+    }
+  }
+  Logger.log('id ' + id + ' 회신을 찾지 못했습니다.');
+}
+
 /** 저장한 값이 그대로 돌아오는지 확인 */
 function selfTest() {
   var sent = {
