@@ -34,12 +34,13 @@ var H = {
   dep:        '열차출발',
   to:         '도착역',
   arr:        '도착시각',
+  shirt:      '티셔츠',
   note:       '메모'
 };
 
 var HEADERS = [
   H.at, H.id, H.name, H.status, H.day, H.transport,
-  H.trainLabel, H.train, H.from, H.dep, H.to, H.arr, H.note
+  H.trainLabel, H.train, H.from, H.dep, H.to, H.arr, H.shirt, H.note
 ];
 
 /* 시각처럼 보이는 값이 날짜로 바뀌지 않게 텍스트 서식으로 둘 열 */
@@ -154,6 +155,7 @@ function doGet() {
           dep: asTime_(get(H.dep)),
           to: asText_(get(H.to)),
           arr: asTime_(get(H.arr)),
+          shirt: asText_(get(H.shirt)),
           note: asText_(get(H.note)),
           at: at instanceof Date ? at.toISOString() : asText_(at)
         });
@@ -218,6 +220,7 @@ function doPost(e) {
     put(H.dep, asTime_(d.dep));
     put(H.to, asText_(d.to));
     put(H.arr, asTime_(d.arr));
+    put(H.shirt, asText_(d.shirt));
     put(H.note, asText_(d.note));
 
     sh.getRange(target, 1, 1, width).setValues([row]);
@@ -281,7 +284,7 @@ function selfTest() {
   var sent = {
     id: 999, name: '테스트', status: 'part', day: '1일차', transport: '기차',
     train: '1283', trainLabel: '무궁화 1283 · 용산 16:25 → 광천 18:55',
-    from: '용산역', dep: '16:25', to: '광천역', arr: '18:55', note: '자체 점검'
+    from: '용산역', dep: '16:25', to: '광천역', arr: '18:55', shirt: '100', note: '자체 점검'
   };
   Logger.log('저장: ' + doPost({ postData: { contents: JSON.stringify(sent) } }).getContent());
 
@@ -290,7 +293,7 @@ function selfTest() {
   for (var i = 0; i < back.rows.length; i++) if (back.rows[i].id === 999) hit = back.rows[i];
   if (!hit) { Logger.log('실패: 999번을 다시 읽지 못했습니다.'); return; }
 
-  var keys = ['status', 'day', 'transport', 'train', 'from', 'dep', 'to', 'arr', 'note'];
+  var keys = ['status', 'day', 'transport', 'train', 'from', 'dep', 'to', 'arr', 'shirt', 'note'];
   var bad = [];
   for (var j = 0; j < keys.length; j++) {
     if (String(hit[keys[j]]) !== String(sent[keys[j]])) {

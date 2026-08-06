@@ -157,7 +157,7 @@ a{color:var(--blue);text-decoration:none}
 .pc.key .tag{background:rgba(30,138,112,.16);color:#146252}
 
 /* 참석 */
-.tally{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:0 0 18px}
+.tally{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:0 0 14px}
 .tally div{background:var(--glass2);border:1px solid rgba(255,255,255,.62);border-radius:16px;
   padding:14px 6px 12px;text-align:center}
 .tally b{display:block;font-family:var(--mono);font-size:26px;font-weight:600;line-height:1}
@@ -242,7 +242,7 @@ a{color:var(--blue);text-decoration:none}
 .sync.ok{color:#136050} .sync.ok i{background:var(--teal)}
 .sync.bad{color:#8E2E3E} .sync.bad i{background:var(--rose)}
 .sync.wait{color:#255E96} .sync.wait i{background:var(--blue)}
-.todo{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 18px}
+.todo{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 20px}
 .todo span{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;
   padding:7px 13px;border-radius:999px;background:rgba(224,118,60,.16);color:#8A4318}
 .todo span b{font-family:var(--mono);font-weight:600}
@@ -261,6 +261,16 @@ a{color:var(--blue);text-decoration:none}
 .tt .rt{font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--ink)}
 .tt .rt em{font-style:normal;font-family:var(--sans);font-weight:400;font-size:11.5px;
   color:var(--ink3);margin-left:7px}
+.tt .kd.n{background:var(--ink3)}
+.tt.sz li{grid-template-columns:52px 96px 1fr}
+.tt.sz .rt em{font-style:normal;font-family:var(--mono);font-size:11.5px;color:var(--ink3);margin-left:6px}
+.tt.sz .bar{display:block;height:8px;border-radius:999px;background:rgba(255,255,255,.7);overflow:hidden}
+.tt.sz .bar i{display:block;height:100%;border-radius:999px;
+  background:linear-gradient(90deg,var(--teal),var(--blue))}
+.pdf{flex:0 0 auto;appearance:none;cursor:pointer;white-space:nowrap;
+  margin-left:6px;padding:8px 15px;border-radius:999px;border:1px solid transparent;
+  background:linear-gradient(105deg,var(--teal),var(--blue));color:#fff;
+  font-family:var(--sans);font-size:12.5px;font-weight:700}
 .tt .fa{font-family:var(--mono);font-size:11.5px;font-weight:600;color:var(--ink3);white-space:nowrap}
 .hbtn{appearance:none;cursor:pointer;background:none;border:0;padding:0;
   font-family:var(--sans);font-size:12px;font-weight:600;color:var(--ink3);text-decoration:underline}
@@ -286,6 +296,8 @@ a{color:var(--blue);text-decoration:none}
   font-size:11.5px;font-weight:400;color:var(--ink3)}
 
 @media (min-width:760px){
+  .nav .col{flex-wrap:nowrap}
+  .pdf{margin-left:auto}
   body{font-size:16px}
   .col{padding:0 24px}
   .panel{padding:32px 30px 28px}
@@ -303,10 +315,86 @@ a{color:var(--blue);text-decoration:none}
   body::before{animation:none}
 }
 @media print{
-  body{background:#fff} body::before{display:none} .nav,.edbtn,.ed,.hintbar,.toast{display:none!important}
-  .panel,.ev,.pc,.pr,.brief div,.late{background:#fff!important;box-shadow:none;
-    backdrop-filter:none;-webkit-backdrop-filter:none;border-color:#DDD}
-  .hero h1{color:#16233A;-webkit-text-fill-color:#16233A}
+  @page{ size:A4; margin:12mm; }
+  body{background:#fff;font-size:9.5pt;line-height:1.5;color:#111}
+  body::before{display:none}
+  .nav,.edbtn,.ed,.hintbar,.toast,.todo,.pdf,.tt.sz .bar{display:none!important}
+  .col{max-width:none;padding:0}
+  a{color:#111;text-decoration:none}
+
+  .bar{padding:0} .bar .col{padding:0 0 4px}
+  .hero{padding:8px 0 6px}
+  .hero .kick{margin:0 0 6px;font-size:8pt}
+  .hero h1{background:none!important;-webkit-background-clip:border-box;background-clip:border-box;
+    color:#16233A!important;-webkit-text-fill-color:#16233A!important;font-size:22pt;line-height:1.1}
+  .meta{margin:10px 0 0;gap:5px}
+  .meta span{box-shadow:none;border:1px solid #CCC;background:#fff;padding:4px 9px;font-size:8.5pt}
+
+  .panel{margin:0 0 6px;padding:6px 0 4px;border:0;border-top:1.2pt solid #16233A;border-radius:0;
+    background:#fff!important;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+  .sh{margin:6px 0 2px;gap:8px}
+  .sh .no{width:20px;height:20px;border-radius:5px;font-size:8pt;
+    background:#16233A!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .sh h2{font-size:13pt}
+  .shp{margin:0 0 8px;font-size:8.5pt;line-height:1.5}
+
+  .brief{gap:0}
+  .brief div{background:#fff!important;border:0;border-bottom:.5pt solid #DDD;border-radius:0;
+    padding:4px 0;grid-template-columns:60px 1fr}
+  .brief dt{font-size:8pt} .brief dd{font-size:9.5pt}
+
+  .tally{gap:0;margin:0 0 8px;border:.5pt solid #CCC}
+  .tally div{background:#fff!important;border:0;border-left:.5pt solid #DDD;border-radius:0;padding:6px 4px}
+  .tally b{font-size:15pt} .tally span{font-size:7.5pt;margin-top:3px}
+
+  .day + .day{margin-top:10px}
+  .dh{margin:6px 0 4px}
+  .dh b{font-size:9pt;padding:3px 9px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .ev{background:#fff!important;border:0;border-bottom:.5pt solid #E2E2E2;border-radius:0;
+    padding:5px 0;margin:0;gap:10px;grid-template-columns:48px 1fr}
+  .ev .tm{font-size:9pt;padding-top:1px} .ev h3{font-size:10.5pt;line-height:1.35}
+  .ev .loc{font-size:8.5pt;margin-top:0}
+  .ev .tip{background:#fff!important;padding:2px 0 0;margin:2px 0 0;font-size:8pt;line-height:1.45}
+  .hop{background:#F1F3F6!important;border:0;border-radius:4px;padding:3px 9px;margin:2px 0;gap:6px;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .hop i{font-size:7.5pt;padding:1px 6px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .hop b{font-size:8.5pt} .hop span{font-size:8pt}
+
+  .places{grid-template-columns:1fr 1fr;gap:0 16px}
+  .pc{background:#fff!important;border:0;border-bottom:.5pt solid #E2E2E2;border-radius:0;padding:6px 0}
+  .pc .tag{font-size:7.5pt;padding:2px 7px;margin-bottom:3px;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .pc h3{font-size:10.5pt} .pc .ad{font-size:8.5pt;margin-top:2px}
+  .pc .de{font-size:8pt;margin-top:3px;line-height:1.4} .pc .lk{display:none}
+
+  .late,.tt{background:#fff!important;border:.5pt solid #CCC;border-radius:4px;padding:8px 10px;margin:0 0 8px}
+  .late h3,.tt h3{font-size:10.5pt} .late > p,.tt > p{font-size:8pt;margin:3px 0 6px;line-height:1.45}
+  .late li,.tt li{background:#fff!important;border:0;border-bottom:.4pt solid #EEE;border-radius:0;padding:3px 0}
+  .late li b,.tt .rt{font-size:8.5pt} .late li .w{font-size:9pt} .late li .h,.tt .fa{font-size:8pt}
+  .tt .sub{margin:6px 0 2px;font-size:8pt}
+  .tt .kd{font-size:7.5pt;padding:1px 6px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .tt.sz li{grid-template-columns:52px 1fr}
+
+  .gh{margin:8px 0 2px;font-size:8.5pt}
+  .gh i{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .ppl{gap:0}
+  .pr{background:#fff!important;border:0;border-bottom:.5pt solid #E8E8E8;border-radius:0;
+    padding:4px 0;grid-template-columns:110px 1fr auto;gap:2px 10px}
+  .pr .nm{font-size:9.5pt} .pr .nm em{font-size:7.5pt;padding:1px 5px}
+  .pr .og{grid-column:2;grid-row:1;font-size:8pt}
+  .pr .ex{grid-column:2;grid-row:2;margin-top:1px;gap:4px}
+  .pr .ex span{background:#F3F4F6!important;font-size:7.5pt;padding:1px 6px;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .pr .ch{grid-column:3;grid-row:1/span 2;font-size:8pt;padding:3px 8px;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+  .ask{background:#fff!important;border:0;border-top:.5pt solid #DDD;border-radius:0;
+    padding:5px 0 0;margin:8px 0 0;font-size:8pt}
+  .foot{padding:6px 0 0} .foot .col{padding:5px 0 0;font-size:7.5pt}
+
+  .ev,.pc,.pr,.late,.tt,.brief div,.dh{page-break-inside:avoid}
+  .day{page-break-inside:auto}
+  #s2{page-break-before:always}
 }
 </style>
 </head>
@@ -328,9 +416,10 @@ a{color:var(--blue);text-decoration:none}
 
 <nav class="nav"><div class="col">
   <a href="#s1"><em>01</em>개요</a>
-  <a href="#s2"><em>02</em>일정</a>
-  <a href="#s3"><em>03</em>장소</a>
-  <a href="#s4"><em>04</em>참석자</a>
+  <a href="#s4"><em>02</em>참석자</a>
+  <a href="#s2"><em>03</em>일정</a>
+  <a href="#s3"><em>04</em>장소</a>
+  <button type="button" class="pdf" id="pdfBtn">PDF 저장</button>
 </div></nav>
 
 <main class="col">
@@ -344,13 +433,32 @@ a{color:var(--blue);text-decoration:none}
     <div><dt>집결</dt><dd>8월 21일 · 용산역 09:14 출발 · 영등포역 09:27 출발</dd></div>
     <div><dt>이동</dt><dd>장항선 열차로 홍성역 도착 후 현지 렌터카</dd></div>
     <div><dt>회의</dt><dd>정기회의 ① 오누이강당 · 정기회의 ② 미옥서원</dd></div>
-    <div><dt>해산</dt><dd>8월 22일 14:30 · 홍성역</dd></div>
+    <div><dt>복귀</dt><dd>8월 22일 · 홍성역 13:28 출발 → 용산역 15:49 도착</dd></div>
     <div><dt>참석</dt><dd id="briefSum">—</dd></div>
+    <div><dt>굿즈</dt><dd id="briefShirt">—</dd></div>
   </dl>
 </section>
 
+<section class="panel" id="s4">
+  <div class="sh"><span class="no n2">02</span><h2>참석자 현황</h2></div>
+  <p class="shp">확정된 회신 기준입니다. 나머지는 확인 중입니다.</p>
+
+  <div class="hintbar">
+    <span>본인 항목의 <b>수정</b>을 눌러 참석 여부와 도착·열차 시각을 직접 입력해 주세요.</span>
+    <span class="sync" id="sync"><i></i>준비 중</span>
+    <button type="button" class="hbtn" id="actBtn" hidden>새로고침</button>
+    <button type="button" class="hbtn" id="wipeBtn" hidden>이 기기 보관분 지우기</button>
+  </div>
+  <div id="tally" class="tally"></div>
+  <div id="todo"></div>
+  <div id="late"></div>
+  <div id="trains"></div>
+  <div id="shirt"></div>
+  <div id="roster"></div>
+</section>
+
 <section class="panel" id="s2">
-  <div class="sh"><span class="no n2">02</span><h2>일정</h2></div>
+  <div class="sh"><span class="no n3">03</span><h2>일정</h2></div>
   <p class="shp">홍성역 도착을 기준으로 정리했습니다. 이동 구간은 일정 사이에 따로 표시했습니다.</p>
 
   <div class="day d1">
@@ -373,19 +481,20 @@ a{color:var(--blue);text-decoration:none}
     <div class="dh"><b>2일차</b><span>8월 22일 토요일</span></div>
     <div class="ev"><span class="tm">09:30</span><div><h3>기상 및 개인 정비</h3><p class="loc">홍주살이 퇴실</p><p class="tip">짐은 차량에 미리 실어 주세요.</p></div></div>
     <div class="hop car"><i>차량</i><b>30분</b><span>홍주살이 → 미옥서원 · 18km</span></div>
-    <div class="ev"><span class="tm">10:00</span><div><h3>미옥서원 관람 및 정기회의 ②</h3><p class="loc">보령 청소면 숲속서점</p><p class="tip">12:00까지 · 10시 개관</p></div></div>
+    <div class="ev"><span class="tm">10:00</span><div><h3>미옥서원 관람 및 정기회의 ②</h3><p class="loc">보령 청소면 숲속서점</p><p class="tip">11:30까지 · 10시 개관</p></div></div>
     <div class="hop car"><i>차량</i><b>20분</b><span>미옥서원 → 조선옥 · 11km</span></div>
-    <div class="ev"><span class="tm">12:20</span><div><h3>점심식사</h3><p class="loc">조선옥 (광천읍)</p></div></div>
+    <div class="ev"><span class="tm">11:50</span><div><h3>점심식사</h3><p class="loc">조선옥 (광천읍)</p><p class="tip">12:45까지 · 열차 시각에 맞춰 일찍 마칩니다.</p></div></div>
     <div class="hop car"><i>차량</i><b>25분</b><span>조선옥 → 홍성역 · 17km</span></div>
-    <div class="ev"><span class="tm">14:20</span><div><h3>홍성역 도착</h3><p class="loc">렌터카 반납</p></div></div>
-    <div class="ev"><span class="tm">14:30</span><div><h3>열차 승차 · 해산</h3><p class="loc">홍성역</p><p class="tip">상행 열차 시각은 예매 확정 후 공지합니다.</p></div></div>
+    <div class="ev"><span class="tm">13:10</span><div><h3>홍성역 도착</h3><p class="loc">렌터카 반납</p></div></div>
+    <div class="hop"><i>열차</i><b>무궁화 1278 · 13:28</b><span>홍성 → 용산 15:49 · 2시간 21분</span></div>
+    <div class="ev"><span class="tm">15:49</span><div><h3>용산역 도착 · 해산</h3><p class="loc">용산역</p><p class="tip">자차로 오신 분은 조선옥에서 개별 출발하셔도 됩니다.</p></div></div>
   </div>
 
   <p class="ask">이동 시간과 거리는 대략치입니다. 오서산을 돌아가는 산길 구간이 있어 오후 일정은 여유를 두었습니다.</p>
 </section>
 
 <section class="panel" id="s3">
-  <div class="sh"><span class="no n3">03</span><h2>장소 · 주소</h2></div>
+  <div class="sh"><span class="no n4">04</span><h2>장소 · 주소</h2></div>
   <p class="shp">일곱 곳입니다. 지도 버튼을 누르면 검색 결과로 이동합니다.</p>
   <div class="places">
 
@@ -434,23 +543,6 @@ a{color:var(--blue);text-decoration:none}
   </div>
 </section>
 
-<section class="panel" id="s4">
-  <div class="sh"><span class="no n4">04</span><h2>참석자 현황</h2></div>
-  <p class="shp">확정된 회신 기준입니다. 나머지는 확인 중입니다.</p>
-
-  <div class="hintbar">
-    <span>본인 항목의 <b>수정</b>을 눌러 참석 여부와 도착·열차 시각을 직접 입력해 주세요.</span>
-    <span class="sync" id="sync"><i></i>준비 중</span>
-    <button type="button" class="hbtn" id="actBtn" hidden>새로고침</button>
-    <button type="button" class="hbtn" id="wipeBtn" hidden>이 기기 보관분 지우기</button>
-  </div>
-  <div id="todo"></div>
-  <div id="tally" class="tally"></div>
-  <div id="late"></div>
-  <div id="trains"></div>
-  <div id="roster"></div>
-</section>
-
 </main>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -463,9 +555,10 @@ a{color:var(--blue);text-decoration:none}
    Apps Script 웹앱 URL. 배포 후 /exec 로 끝나는 주소를 붙여넣으세요.
    비워 두면 이 기기(브라우저)에만 저장됩니다.
    ─────────────────────────────────────────────────────────── */
-var API_URL = "https://script.google.com/macros/s/AKfycby55k32ubm761ZmLhYsunUmhoLYWJSaSkPDMQvCuDPzm40pCO4lXK_pFboGLFwjqPyZ/exec";
+var API_URL = "";
 
 var KEY   = "sasw-workshop-2026";
+var CKEY  = KEY + ":snapshot";   /* 마지막으로 받아온 서버 값 — 첫 화면을 바로 그리는 용도 */
 var LABEL = { full:"전일정 참석", part:"부분 참석", tbd:"확인 중", no:"불참" };
 var SHORT = { full:"전일정", part:"부분", tbd:"확인 중", no:"불참" };
 var ORDER = ["full","part","tbd","no"];
@@ -483,7 +576,8 @@ var TRAINS = [
   {id:"1283", grp:"l", kind:"m", name:"무궁화", no:"1283", from:"용산역", dep:"16:25", to:"광천역", arr:"18:55", fare:"10,400원"},
   {id:"1209", grp:"l", kind:"s", name:"새마을", no:"1209", from:"용산역", dep:"17:52", to:"광천역", arr:"20:13", fare:"15,500원"},
   {id:"1285", grp:"l", kind:"m", name:"무궁화", no:"1285", from:"용산역", dep:"18:21", to:"광천역", arr:"20:54", fare:"10,400원"},
-  {id:"1287", grp:"l", kind:"m", name:"무궁화", no:"1287", from:"용산역", dep:"20:43", to:"광천역", arr:"23:11", fare:"10,400원"}
+  {id:"1287", grp:"l", kind:"m", name:"무궁화", no:"1287", from:"용산역", dep:"20:43", to:"광천역", arr:"23:11", fare:"10,400원"},
+  {id:"1278", grp:"u", kind:"m", name:"무궁화", no:"1278", from:"홍성역", dep:"13:28", to:"용산역", arr:"15:49", fare:"9,600원"}
 ];
 
 function train(id){
@@ -535,7 +629,8 @@ var BASE = [
  {id:17,name:"조소연",   group:"전문위원", org:"사회복지연구소 마실",         title:"공동대표",     status:"no"}
 ];
 
-var FIELDS = ["status","day","transport","train","arr","note"];
+var FIELDS = ["status","day","transport","train","arr","shirt","note"];
+var SIZES  = ["95","100","105"];
 
 function fresh(){
   return BASE.map(function(p){
@@ -611,6 +706,9 @@ function clearLocal(){
 }
 function pendingCount(){ return Object.keys(PENDING).length; }
 
+function putSnap(rows){ try{ localStorage.setItem(CKEY, JSON.stringify(rows || [])); }catch(e){} }
+function getSnap(){ try{ var r = localStorage.getItem(CKEY); return r ? JSON.parse(r) : null; }catch(e){ return null; } }
+
 /* ── 서버 ── */
 function applyRows(rows){
   if(!rows || !rows.length) return 0;
@@ -624,7 +722,7 @@ function applyRows(rows){
       var t0 = train(r.trainLabel);
       if(t0) p.train = t0.id;
     }
-    p.arr = r.arr || ""; p.note = r.note || "";
+    p.arr = r.arr || ""; p.shirt = r.shirt || ""; p.note = r.note || "";
     n++;
   });
   return n;
@@ -653,6 +751,7 @@ function pull(quiet){
       (j.rows || []).forEach(function(r){ have[Number(r.id)] = 1; });
       loadLocal(have);                        /* 서버에 없는 미전송분만 보완 */
       saveLocal();
+      putSnap(j.rows || []);
       render();
       var pend = pendingCount();
       status("ok", (n ? n + "명 회신 반영" : "회신 없음") + (pend ? " · 미전송 " + pend + "건" : ""));
@@ -677,13 +776,13 @@ function push(p){
     return;
   }
   status("wait", "저장 중");
-  render();                                   /* 입력값을 즉시 화면에 반영 */
+  render(true);                               /* 입력값을 즉시 화면에 반영 */
   var t = train(p.train);
   var body = JSON.stringify({
     id:p.id, name:p.name, status:p.status, day:p.day, transport:p.transport,
     train:p.train, trainLabel: t ? trainText(t) : "",
     from: t ? t.from : "", dep: t ? t.dep : "",
-    to: t ? t.to : "", arr: arrOf(p), note:p.note
+    to: t ? t.to : "", arr: arrOf(p), shirt:p.shirt, note:p.note
   });
   fetch(API_URL, {
     method:"POST", redirect:"follow",
@@ -731,6 +830,7 @@ function bits(p){
       a.push("도착 시각 미정");
     }
   }
+  if(p.status !== "no") a.push(p.shirt ? "티셔츠 " + p.shirt : "티셔츠 미정");
   if(p.note) a.push(p.note);
   return a;
 }
@@ -739,6 +839,7 @@ function bits(p){
 function renderTrains(){
   var g = TRAINS.filter(function(t){ return t.grp === "g"; });
   var l = TRAINS.filter(function(t){ return t.grp === "l"; });
+  var u = TRAINS.filter(function(t){ return t.grp === "u"; });
   var line = function(t){
     return '<li><span class="kd '+t.kind+'">'+esc(t.grp==="g" ? "단체" : t.name)+
       (t.no ? " "+esc(t.no) : "")+'</span>'+
@@ -748,14 +849,27 @@ function renderTrains(){
       '<span class="fa">'+esc(t.fare || "단체 예매")+'</span></li>';
   };
   $("#trains").innerHTML = '<div class="tt">'+
-    '<h3>하행 열차</h3>'+
-    '<p>전일정 참석은 아래 단체 편성 중 편한 승차역을, 후발 참석은 광천역 도착 편성을 골라 주세요. 고르면 명단에 바로 표시됩니다.</p>'+
+    '<h3>열차 안내</h3>'+
+    '<p>전일정 참석은 단체 편성 중 편한 승차역을, 후발 참석은 광천역 도착 편성을 골라 주세요. 복귀 열차는 전원 같은 편성입니다.</p>'+
     '<p class="sub">전일정 · 단체 승차</p><ul>'+g.map(line).join("")+'</ul>'+
     '<p class="sub">후발 · 용산 → 광천</p><ul>'+l.map(line).join("")+'</ul>'+
+    '<p class="sub">2일차 복귀 · 홍성 → 용산 (단체)</p><ul>'+u.map(line).join("")+'</ul>'+
     '</div>';
 }
 
-function render(){
+var lastSig = null, deferred = false;
+function sig(){
+  return people.map(function(p){
+    return p.id + ":" + FIELDS.map(function(f){ return p[f]; }).join("|");
+  }).join(";");
+}
+
+function render(force){
+  if(document.querySelector(".pr.open")){ deferred = true; return; }  /* 입력 중에는 화면을 흔들지 않는다 */
+  var now = sig();
+  if(!force && now === lastSig) return;                               /* 바뀐 게 없으면 그대로 둔다 */
+  lastSig = now;
+
   var c = {full:0, part:0, tbd:0, no:0};
   people.forEach(function(p){ c[p.status]++; });
 
@@ -790,11 +904,28 @@ function render(){
   var needBoard = people.filter(function(p){ return p.status==="full" && !train(p.train); }).length;
   var needTrain = people.filter(function(p){ return p.status==="part" && p.transport==="기차" && !train(p.train); }).length;
   var needTime  = people.filter(function(p){ return p.status==="part" && p.transport!=="기차" && !p.arr; }).length;
+  var joining   = people.filter(function(p){ return p.status !== "no"; });
+  var needShirt = joining.filter(function(p){ return !p.shirt; }).length;
+
+  var sc = {}; SIZES.forEach(function(z){ sc[z] = 0; });
+  joining.forEach(function(p){ if(sc[p.shirt] !== undefined) sc[p.shirt]++; });
+  $("#briefShirt").textContent = "티셔츠 " + SIZES.map(function(z){ return z + " " + sc[z] + "명"; }).join(" · ") +
+    (needShirt ? " · 미회신 " + needShirt + "명" : "");
+  $("#shirt").innerHTML = '<div class="tt sz"><h3>굿즈 티셔츠 사이즈</h3>'+
+    '<p>참석하시는 분은 본인 항목의 수정에서 사이즈를 골라 주세요. 불참으로 표시된 분은 집계에서 빠집니다.</p><ul>'+
+    SIZES.map(function(z){
+      var n = sc[z], w = joining.length ? Math.round(n / joining.length * 100) : 0;
+      return '<li><span class="kd s">'+z+'</span><span class="rt">'+n+'명'+
+        '<em>'+w+'%</em></span><span class="bar"><i style="width:'+w+'%"></i></span></li>';
+    }).join("")+
+    (needShirt ? '<li><span class="kd n">미회신</span><span class="rt">'+needShirt+'명</span><span class="bar"></span></li>' : '')+
+    '</ul></div>';
   var chip = function(n, label){
     return '<span'+(n?'':' class="done"')+'>'+esc(label)+' <b>'+n+'</b>명</span>';
   };
   $("#todo").innerHTML = '<div class="todo">'+
     chip(needBoard,"승차역 회신")+chip(needTrain,"열차 편성 회신")+chip(needTime,"도착 시각 회신")+
+    chip(needShirt,"티셔츠 사이즈")+
     '</div>';
 
   $("#wipeBtn").hidden = !(API_URL && pendingCount());
@@ -851,6 +982,8 @@ function editor(p){
     '<div class="fr" data-w="train"><label>열차 편성</label><select data-f="trainL">'+lOpts+'</select></div>'+
     '<div class="fr" data-w="car"><label>도착 예정</label><input type="time" data-f="arr" value="'+esc(p.arr)+'"></div>'+
 
+    '<div class="fr" data-w="shirt"><label>티셔츠</label><select data-f="shirt">'+
+      opt("","선택해 주세요",!p.shirt)+SIZES.map(function(z){ return opt(z,z,p.shirt===z); }).join("")+'</select></div>'+
     '<div class="fr"><label>메모</label><input type="text" data-f="note" value="'+esc(p.note)+'" placeholder="예: 픽업 필요 · 조기 귀가"></div>'+
     '<div class="eb"><button type="button" class="sv">저장</button><button type="button" class="cn">취소</button></div>'+
   '</div>';
@@ -863,7 +996,8 @@ function sync(ed){
     full: v === "full",
     part: v === "part",
     train: v === "part" && t === "기차",
-    car: v === "part" && (t === "자차" || t === "기타")
+    car: v === "part" && (t === "자차" || t === "기타"),
+    shirt: v !== "no"
   };
   Array.prototype.forEach.call(ed.querySelectorAll("[data-w]"), function(el){
     el.hidden = !show[el.getAttribute("data-w")];
@@ -874,6 +1008,7 @@ function closeRow(pr){
   var ed = pr.querySelector(".ed"); if(ed) ed.remove();
   pr.classList.remove("open");
   var b = pr.querySelector(".edbtn"); if(b) b.textContent = "수정";
+  if(deferred){ deferred = false; render(true); }   /* 미뤄 둔 갱신 처리 */
 }
 
 document.getElementById("s4").addEventListener("click", function(e){
@@ -901,6 +1036,7 @@ document.getElementById("s4").addEventListener("click", function(e){
     };
     p2.status    = val("status") || "tbd";
     p2.note      = val("note");
+    p2.shirt     = p2.status === "no" ? "" : val("shirt");
     p2.day       = p2.status === "part" ? val("day") : "";
     p2.transport = p2.status === "part" ? val("transport") : "";
 
@@ -913,6 +1049,7 @@ document.getElementById("s4").addEventListener("click", function(e){
     } else {
       p2.train = ""; p2.arr = "";
     }
+    closeRow(pr2);          /* 먼저 닫아야 화면이 바로 갱신된다 */
     push(p2);
   }
 });
@@ -935,8 +1072,24 @@ $("#wipeBtn").addEventListener("click", function(){
   pull();
 });
 
-render();
-pull();
+$("#pdfBtn").addEventListener("click", function(){ window.print(); });
+
+/* 첫 화면을 기다리지 않게: 지난번에 받아온 값으로 바로 그리고, 갱신은 뒤에서 한다 */
+(function boot(){
+  var snap = getSnap();
+  if(API_URL && snap && snap.length){
+    var n = applyRows(snap);
+    var have = {}; snap.forEach(function(r){ have[Number(r.id)] = 1; });
+    loadLocal(have);
+    render(true);
+    status("wait", n + "명 회신 · 갱신 중");
+  } else {
+    if(!API_URL) loadLocal();
+    render(true);
+    status("wait", API_URL ? "불러오는 중" : "회신 대기");
+  }
+  pull(true);
+})();
 })();
 </script>
 
