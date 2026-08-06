@@ -555,7 +555,7 @@ a{color:var(--blue);text-decoration:none}
    Apps Script 웹앱 URL. 배포 후 /exec 로 끝나는 주소를 붙여넣으세요.
    비워 두면 이 기기(브라우저)에만 저장됩니다.
    ─────────────────────────────────────────────────────────── */
-var API_URL = "https://script.google.com/macros/s/AKfycby55k32ubm761ZmLhYsunUmhoLYWJSaSkPDMQvCuDPzm40pCO4lXK_pFboGLFwjqPyZ/exec";
+var API_URL = "";
 
 var KEY   = "sasw-workshop-2026";
 var CKEY  = KEY + ":snapshot";   /* 마지막으로 받아온 서버 값 — 첫 화면을 바로 그리는 용도 */
@@ -603,28 +603,27 @@ function trainText(t){
 /* ── 명단 ──
    id는 회신 저장의 기준입니다. 한 번 정한 뒤에는 바꾸지 마세요. */
 var BASE = [
- /* 전일정 참석 8명 — 승차역 회신 대기 */
+ /* ── 전일정 참석 9명 ──────────────────────────────
+    2026. 8. 6. 기준 확정본. 시트가 비어 있으면 이 값이 그대로 보입니다. */
  {id:1, name:"김아래미", group:"위원장",   org:"서울여자대학교",              title:"교수",         status:"full"},
- {id:2, name:"이상현",   group:"부위원장", org:"신목종합사회복지관",          title:"부장",         status:"full"},
+ {id:2, name:"이상현",   group:"부위원장", org:"신목종합사회복지관",          title:"부장",         status:"full", train:"g2", shirt:"105"},
  {id:3, name:"김유리",   group:"운영위원", org:"서대문구재가노인복지기관",    title:"관장",         status:"full"},
- {id:4, name:"권민지",   group:"전문위원", org:"방화11종합사회복지관",        title:"과장",         status:"full"},
+ {id:4, name:"권민지",   group:"전문위원", org:"방화11종합사회복지관",        title:"과장",         status:"full", train:"g2"},
  {id:5, name:"송경태",   group:"전문위원", org:"도봉서원종합사회복지관",      title:"과장",         status:"full"},
- {id:6, name:"조상우",   group:"전문위원", org:"태화해뜨는샘",                title:"사무국장",     status:"full"},
- {id:7, name:"고석우",   group:"협회",     org:"서울특별시사회복지사협회",    title:"과장",         status:"full"},
- {id:8, name:"이재중",   group:"협회",     org:"서울특별시사회복지사협회",    title:"사회복지사",   status:"full"},
+ {id:6, name:"조상우",   group:"전문위원", org:"태화해뜨는샘",                title:"사무국장",     status:"full", train:"g2"},
+ {id:7, name:"고석우",   group:"협회",     org:"서울특별시사회복지사협회",    title:"과장",         status:"full", train:"g2", shirt:"105"},
+ {id:8, name:"이재중",   group:"협회",     org:"서울특별시사회복지사협회",    title:"사회복지사",   status:"full", train:"g1", shirt:"105"},
+ {id:15,name:"정순영",   group:"운영위원", org:"관악구지역사회보장협의체",    title:"사무국장",     status:"full", train:"g2"},
 
- /* 자차 참석 2명 — 도착 시각 회신 대기 */
- {id:9, name:"이상표",   group:"운영위원", org:"시립고덕양로원",              title:"원장",         status:"part", day:"1일차", transport:"자차", note:"오후 참석"},
- {id:10,name:"김민재",   group:"운영위원", org:"파라다이스복지재단",          title:"매니저(과장)", status:"part", day:"1일차", transport:"자차"},
-
- /* 후발 참석 4명 — 열차 편성 회신 대기 (광천역 도착) */
+ /* ── 부분 참석 6명 ── */
+ {id:9, name:"이상표",   group:"운영위원", org:"시립고덕양로원",              title:"원장",         status:"part", day:"1일차", transport:"자차", arr:"12:00"},
+ {id:10,name:"김민재",   group:"운영위원", org:"파라다이스복지재단",          title:"매니저(과장)", status:"part", day:"1일차", transport:"자차", arr:"12:00"},
  {id:11,name:"황흥기",   group:"전문위원", org:"넥스트임팩트",                title:"대표",         status:"part", day:"1일차", transport:"기차"},
- {id:12,name:"정선영",   group:"전문위원", org:"신월종합사회복지관",          title:"부장",         status:"part", day:"1일차", transport:"기차"},
- {id:13,name:"노혜진",   group:"전문위원", org:"강서대학교",                  title:"교수",         status:"part", day:"1일차", transport:"기차"},
- {id:14,name:"심휘선",   group:"전문위원", org:"종로노인종합복지관",          title:"관장",         status:"part", day:"1일차", transport:"기차"},
+ {id:12,name:"정선영",   group:"전문위원", org:"신월종합사회복지관",          title:"부장",         status:"part", day:"1일차", transport:"기차", train:"1285"},
+ {id:13,name:"노혜진",   group:"전문위원", org:"강서대학교",                  title:"교수",         status:"part", day:"1일차", transport:"기차", train:"1285"},
+ {id:14,name:"심휘선",   group:"전문위원", org:"종로노인종합복지관",          title:"관장",         status:"part", day:"1일차", transport:"기차", train:"1285"},
 
- /* 미회신 · 불참 */
- {id:15,name:"정순영",   group:"운영위원", org:"관악구지역사회보장협의체",    title:"사무국장",     status:"tbd"},
+ /* ── 불참 2명 ── */
  {id:16,name:"오순희",   group:"전문위원", org:"양천거점형 우리동네키움센터", title:"센터장",       status:"no"},
  {id:17,name:"조소연",   group:"전문위원", org:"사회복지연구소 마실",         title:"공동대표",     status:"no"}
 ];
@@ -757,10 +756,19 @@ function pull(quiet){
       status("ok", (n ? n + "명 회신 반영" : "회신 없음") + (pend ? " · 미전송 " + pend + "건" : ""));
     })
     .catch(function(){
+      /* 실패했다고 처음 상태로 되돌리지 않는다. 마지막으로 받아둔 값을 그대로 유지한다. */
       people = fresh();
-      var had = loadLocal();
+      var snap = getSnap();
+      var have = {};
+      if(snap && snap.length){
+        applyRows(snap);
+        snap.forEach(function(r){ have[Number(r.id)] = 1; });
+      }
+      loadLocal(have);
       render();
-      status("bad", had ? "연결 실패 · 미전송 " + pendingCount() + "건" : "연결 실패");
+      var pend = pendingCount();
+      status("bad", (snap && snap.length ? "연결 실패 · 마지막 값 표시" : "연결 실패") +
+        (pend ? " · 미전송 " + pend + "건" : ""));
     });
 }
 

@@ -279,6 +279,37 @@ function removeOne(id) {
   Logger.log('id ' + id + ' 회신을 찾지 못했습니다.');
 }
 
+/**
+ * 페이지의 확정 명단(index.html 의 BASE)을 시트에 그대로 써 넣습니다.
+ * reset() 으로 비운 뒤 실행하면 시트와 페이지가 완전히 같아집니다.
+ * 이후 위원들이 수정하는 내용만 이 위에 덮어써집니다.
+ */
+function seedFromPage() {
+  var rows = [
+    {id:1,  name:'김아래미', status:'full'},
+    {id:2,  name:'이상현',   status:'full', train:'g2',   trainLabel:'영등포역 09:27 탑승', from:'영등포역', dep:'09:27', to:'홍성역', shirt:'105'},
+    {id:3,  name:'김유리',   status:'full'},
+    {id:4,  name:'권민지',   status:'full', train:'g2',   trainLabel:'영등포역 09:27 탑승', from:'영등포역', dep:'09:27', to:'홍성역'},
+    {id:5,  name:'송경태',   status:'full'},
+    {id:6,  name:'조상우',   status:'full', train:'g2',   trainLabel:'영등포역 09:27 탑승', from:'영등포역', dep:'09:27', to:'홍성역'},
+    {id:7,  name:'고석우',   status:'full', train:'g2',   trainLabel:'영등포역 09:27 탑승', from:'영등포역', dep:'09:27', to:'홍성역', shirt:'105'},
+    {id:8,  name:'이재중',   status:'full', train:'g1',   trainLabel:'용산역 09:14 탑승',   from:'용산역',   dep:'09:14', to:'홍성역', shirt:'105'},
+    {id:15, name:'정순영',   status:'full', train:'g2',   trainLabel:'영등포역 09:27 탑승', from:'영등포역', dep:'09:27', to:'홍성역'},
+    {id:9,  name:'이상표',   status:'part', day:'1일차', transport:'자차', arr:'12:00'},
+    {id:10, name:'김민재',   status:'part', day:'1일차', transport:'자차', arr:'12:00'},
+    {id:11, name:'황흥기',   status:'part', day:'1일차', transport:'기차'},
+    {id:12, name:'정선영',   status:'part', day:'1일차', transport:'기차', train:'1285', trainLabel:'무궁화 1285 · 용산 18:21 → 광천 20:54', from:'용산역', dep:'18:21', to:'광천역', arr:'20:54'},
+    {id:13, name:'노혜진',   status:'part', day:'1일차', transport:'기차', train:'1285', trainLabel:'무궁화 1285 · 용산 18:21 → 광천 20:54', from:'용산역', dep:'18:21', to:'광천역', arr:'20:54'},
+    {id:14, name:'심휘선',   status:'part', day:'1일차', transport:'기차', train:'1285', trainLabel:'무궁화 1285 · 용산 18:21 → 광천 20:54', from:'용산역', dep:'18:21', to:'광천역', arr:'20:54'},
+    {id:16, name:'오순희',   status:'no'},
+    {id:17, name:'조소연',   status:'no'}
+  ];
+  for (var i = 0; i < rows.length; i++) {
+    doPost({ postData: { contents: JSON.stringify(rows[i]) } });
+  }
+  Logger.log(rows.length + '건을 시트에 기록했습니다. 페이지에서 새로고침을 누르세요.');
+}
+
 /** 저장한 값이 그대로 돌아오는지 확인 */
 function selfTest() {
   var sent = {
