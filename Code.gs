@@ -34,19 +34,21 @@ var H = {
   dep:        '열차출발',
   to:         '도착역',
   arr:        '도착시각',
+  back:       '복귀ID',
+  backLabel:  '복귀',
   shirt:      '티셔츠',
   note:       '메모'
 };
 
 var HEADERS = [
   H.at, H.id, H.name, H.status, H.day, H.transport,
-  H.trainLabel, H.train, H.from, H.dep, H.to, H.arr, H.shirt, H.note
+  H.trainLabel, H.train, H.from, H.dep, H.to, H.arr, H.backLabel, H.back, H.shirt, H.note
 ];
 
 /* 시각처럼 보이는 값이 날짜로 바뀌지 않게 텍스트 서식으로 둘 열 */
-var TEXT_COLS = [H.dep, H.arr, H.train];
+var TEXT_COLS = [H.dep, H.arr, H.train, H.back];
 
-var ALLOWED = { full: 1, part: 1, tbd: 1, no: 1 };
+var ALLOWED = { full: 1, day1: 1, late: 1, tbd: 1, no: 1 };
 
 /* ─────────────────────────── 시트 ─────────────────────────── */
 
@@ -155,6 +157,8 @@ function doGet() {
           dep: asTime_(get(H.dep)),
           to: asText_(get(H.to)),
           arr: asTime_(get(H.arr)),
+          back: asText_(get(H.back)),
+          backLabel: asText_(get(H.backLabel)),
           shirt: asText_(get(H.shirt)),
           note: asText_(get(H.note)),
           at: at instanceof Date ? at.toISOString() : asText_(at)
@@ -220,6 +224,8 @@ function doPost(e) {
     put(H.dep, asTime_(d.dep));
     put(H.to, asText_(d.to));
     put(H.arr, asTime_(d.arr));
+    put(H.back, asText_(d.back));
+    put(H.backLabel, asText_(d.backLabel));
     put(H.shirt, asText_(d.shirt));
     put(H.note, asText_(d.note));
 
@@ -285,37 +291,56 @@ function removeOne(id) {
  * 이후 위원들이 수정하는 내용만 이 위에 덮어써집니다.
  */
 function seedFromPage() {
+  var G1 = { train:'g1', trainLabel:'용산역 09:14 → 광천 11:36', from:'용산역',   dep:'09:14', to:'광천역', arr:'11:36' };
+  var G2 = { train:'g2', trainLabel:'영등포역 09:27 → 광천 11:36', from:'영등포역', dep:'09:27', to:'광천역', arr:'11:36' };
+  var L  = { train:'1285', trainLabel:'무궁화 1285 · 용산 18:21 → 광천 20:54', from:'용산역', dep:'18:21', to:'광천역', arr:'20:54' };
+  var U1 = { back:'u1', backLabel:'광천 13:14 → 영등포 15:36' };
+  var U2 = { back:'u2', backLabel:'광천 13:14 → 용산 15:49' };
+  var X1 = { back:'x1', backLabel:'1일차만 참석 · 개별 귀가' };
+  var X2 = { back:'x2', backLabel:'자차 이동' };
+  var X3 = { back:'x3', backLabel:'현지 잔류' };
+
+  function mk(id, name, status, transport, go, back, shirt, note) {
+    var o = { id:id, name:name, status:status, transport:transport, shirt:shirt||'', note:note||'' };
+    if (go)   for (var k in go)   o[k] = go[k];
+    if (back) for (var b in back) o[b] = back[b];
+    return o;
+  }
+
   var rows = [
-    {id:1,  name:'김아래미', status:'full'},
-    {id:2,  name:'이상현',   status:'full', train:'g2',   trainLabel:'영등포역 09:27 탑승', from:'영등포역', dep:'09:27', to:'홍성역', shirt:'105'},
-    {id:3,  name:'김유리',   status:'full'},
-    {id:4,  name:'권민지',   status:'full', train:'g2',   trainLabel:'영등포역 09:27 탑승', from:'영등포역', dep:'09:27', to:'홍성역'},
-    {id:5,  name:'송경태',   status:'full'},
-    {id:6,  name:'조상우',   status:'full', train:'g2',   trainLabel:'영등포역 09:27 탑승', from:'영등포역', dep:'09:27', to:'홍성역'},
-    {id:7,  name:'고석우',   status:'full', train:'g2',   trainLabel:'영등포역 09:27 탑승', from:'영등포역', dep:'09:27', to:'홍성역', shirt:'105'},
-    {id:8,  name:'이재중',   status:'full', train:'g1',   trainLabel:'용산역 09:14 탑승',   from:'용산역',   dep:'09:14', to:'홍성역', shirt:'105'},
-    {id:15, name:'정순영',   status:'full', train:'g2',   trainLabel:'영등포역 09:27 탑승', from:'영등포역', dep:'09:27', to:'홍성역'},
-    {id:9,  name:'이상표',   status:'part', day:'1일차', transport:'자차', arr:'12:00'},
-    {id:10, name:'김민재',   status:'part', day:'1일차', transport:'자차', arr:'12:00'},
-    {id:11, name:'황흥기',   status:'part', day:'1일차', transport:'기차'},
-    {id:12, name:'정선영',   status:'part', day:'1일차', transport:'기차', train:'1285', trainLabel:'무궁화 1285 · 용산 18:21 → 광천 20:54', from:'용산역', dep:'18:21', to:'광천역', arr:'20:54'},
-    {id:13, name:'노혜진',   status:'part', day:'1일차', transport:'기차', train:'1285', trainLabel:'무궁화 1285 · 용산 18:21 → 광천 20:54', from:'용산역', dep:'18:21', to:'광천역', arr:'20:54'},
-    {id:14, name:'심휘선',   status:'part', day:'1일차', transport:'기차', train:'1285', trainLabel:'무궁화 1285 · 용산 18:21 → 광천 20:54', from:'용산역', dep:'18:21', to:'광천역', arr:'20:54'},
-    {id:16, name:'오순희',   status:'no'},
-    {id:17, name:'조소연',   status:'no'}
+    mk(1,'김아래미','full','기차',G1,U2,'95'),
+    mk(2,'이상현','full','기차',G2,U1,'105'),
+    mk(3,'김유리','full','기차',G2,X1,'105','복귀는 자체 이동'),
+    mk(4,'권민지','full','기차',G2,U1,'105'),
+    mk(5,'송경태','full','기차',G1,U2,'105'),
+    mk(6,'조상우','full','기차',G2,U1,''),
+    mk(7,'고석우','full','기차',G2,X3,'105','홍성 잔류'),
+    mk(8,'이재중','full','기차',G1,U2,'105'),
+    mk(15,'정순영','full','기차',G2,U1,''),
+    mk(9,'이상표','day1','자차',{arr:'12:00'},X1,'105'),
+    mk(10,'김민재','day1','자차',{arr:'12:00'},X1,''),
+    mk(12,'정선영','late','기차',L,U1,'100'),
+    mk(13,'노혜진','late','기차',L,U2,''),
+    mk(14,'심휘선','late','기차',L,U2,''),
+    mk(11,'황흥기','late','자차',{arr:'20:30'},X2,'105'),
+    mk(16,'오순희','no','',null,null,''),
+    mk(17,'조소연','no','',null,null,'')
   ];
+
   for (var i = 0; i < rows.length; i++) {
     doPost({ postData: { contents: JSON.stringify(rows[i]) } });
   }
   Logger.log(rows.length + '건을 시트에 기록했습니다. 페이지에서 새로고침을 누르세요.');
 }
 
+
 /** 저장한 값이 그대로 돌아오는지 확인 */
 function selfTest() {
   var sent = {
-    id: 999, name: '테스트', status: 'part', day: '1일차', transport: '기차',
+    id: 999, name: '테스트', status: 'late', transport: '기차',
     train: '1283', trainLabel: '무궁화 1283 · 용산 16:25 → 광천 18:55',
-    from: '용산역', dep: '16:25', to: '광천역', arr: '18:55', shirt: '100', note: '자체 점검'
+    from: '용산역', dep: '16:25', to: '광천역', arr: '18:55',
+    back: 'u1', backLabel: '광천 13:14 → 영등포 15:36', shirt: '100', note: '자체 점검'
   };
   Logger.log('저장: ' + doPost({ postData: { contents: JSON.stringify(sent) } }).getContent());
 
@@ -324,7 +349,7 @@ function selfTest() {
   for (var i = 0; i < back.rows.length; i++) if (back.rows[i].id === 999) hit = back.rows[i];
   if (!hit) { Logger.log('실패: 999번을 다시 읽지 못했습니다.'); return; }
 
-  var keys = ['status', 'day', 'transport', 'train', 'from', 'dep', 'to', 'arr', 'shirt', 'note'];
+  var keys = ['status', 'transport', 'train', 'from', 'dep', 'to', 'arr', 'back', 'shirt', 'note'];
   var bad = [];
   for (var j = 0; j < keys.length; j++) {
     if (String(hit[keys[j]]) !== String(sent[keys[j]])) {

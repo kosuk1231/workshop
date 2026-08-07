@@ -157,12 +157,13 @@ a{color:var(--blue);text-decoration:none}
 .pc.key .tag{background:rgba(30,138,112,.16);color:#146252}
 
 /* 참석 */
-.tally{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:0 0 14px}
+.tally{display:grid;grid-template-columns:repeat(auto-fit,minmax(66px,1fr));gap:9px;margin:0 0 14px}
 .tally div{background:var(--glass2);border:1px solid rgba(255,255,255,.62);border-radius:16px;
   padding:14px 6px 12px;text-align:center}
 .tally b{display:block;font-family:var(--mono);font-size:26px;font-weight:600;line-height:1}
 .tally span{display:block;font-size:11px;font-weight:500;color:var(--ink3);margin-top:7px}
-.k1 b{color:var(--teal)} .k2 b{color:var(--peach)} .k3 b{color:var(--ink3)} .k4 b{color:var(--rose)}
+.k1 b{color:var(--teal)} .k2 b{color:var(--peach)} .k3 b{color:var(--ink3)}
+.k4 b{color:var(--rose)} .k5 b{color:var(--violet)}
 .late{border-radius:18px;padding:17px 17px 15px;margin:0 0 20px;
   background:linear-gradient(115deg,rgba(240,145,95,.22),rgba(196,72,92,.13));
   border:1px solid rgba(255,255,255,.6)}
@@ -180,7 +181,7 @@ a{color:var(--blue);text-decoration:none}
   letter-spacing:.04em;color:var(--ink2)}
 .gh i{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
 .gh.g1 i{background:var(--teal)} .gh.g2 i{background:var(--peach)}
-.gh.g3 i{background:#A6B1C4} .gh.g4 i{background:var(--rose)}
+.gh.g3 i{background:#A6B1C4} .gh.g4 i{background:var(--rose)} .gh.g5 i{background:var(--violet)}
 .ppl{display:grid;gap:7px}
 .pr{display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center;
   background:var(--glass2);border:1px solid rgba(255,255,255,.6);border-radius:14px;padding:12px 14px}
@@ -194,6 +195,7 @@ a{color:var(--blue);text-decoration:none}
 .c-p{background:rgba(224,118,60,.18);color:#8A4318}
 .c-t{background:rgba(110,124,147,.15);color:#4C5A72}
 .c-x{background:rgba(196,72,92,.15);color:#8E2E3E}
+.c-l{background:rgba(113,89,181,.15);color:#4E3A86}
 .pr .ex{grid-column:1/-1;margin:8px 0 0;display:flex;flex-wrap:wrap;gap:6px}
 .pr .ex span{font-size:11.5px;font-weight:500;padding:4px 10px;border-radius:999px;
   background:rgba(255,255,255,.66);color:var(--ink2)}
@@ -426,14 +428,14 @@ a{color:var(--blue);text-decoration:none}
 
 <section class="panel" id="s1">
   <div class="sh"><span class="no n1">01</span><h2>개요</h2></div>
-  <p class="shp">1박 2일 일정입니다. 이동은 서울에서 장항선 열차로 홍성역까지, 현지에서는 렌터카로 움직입니다.</p>
+  <p class="shp">1박 2일 일정입니다. 이동은 서울에서 장항선 열차로 광천역까지, 현지에서는 렌터카로 움직입니다.</p>
   <dl class="brief">
     <div><dt>일정</dt><dd>2026. 8. 21.(금) ~ 8. 22.(토) · 1박 2일</dd></div>
     <div><dt>숙소</dt><dd>이웃과 정답게 홍주살이 · 충남 홍성군 장곡면 홍남동로 473번길 79-22</dd></div>
-    <div><dt>집결</dt><dd>8월 21일 · 용산역 09:14 출발 · 영등포역 09:27 출발</dd></div>
-    <div><dt>이동</dt><dd>장항선 열차로 홍성역 도착 후 현지 렌터카</dd></div>
+    <div><dt>집결</dt><dd>8월 21일 · 용산역 09:14 출발 · 영등포역 09:27 출발 → 광천역 11:36 도착</dd></div>
+    <div><dt>이동</dt><dd>장항선 열차로 광천역까지, 현지에서는 렌터카</dd></div>
     <div><dt>회의</dt><dd>정기회의 ① 오누이강당 · 정기회의 ② 미옥서원</dd></div>
-    <div><dt>복귀</dt><dd>8월 22일 · 홍성역 13:28 출발 → 용산역 15:49 도착</dd></div>
+    <div><dt>복귀</dt><dd>8월 22일 · 광천역 13:14 출발 → 영등포 15:36 · 용산 15:49</dd></div>
     <div><dt>참석</dt><dd id="briefSum">—</dd></div>
     <div><dt>굿즈</dt><dd id="briefShirt">—</dd></div>
   </dl>
@@ -459,22 +461,22 @@ a{color:var(--blue);text-decoration:none}
 
 <section class="panel" id="s2">
   <div class="sh"><span class="no n3">03</span><h2>일정</h2></div>
-  <p class="shp">홍성역 도착을 기준으로 정리했습니다. 이동 구간은 일정 사이에 따로 표시했습니다.</p>
+  <p class="shp">광천역 도착·출발을 기준으로 정리했습니다. 이동 구간은 일정 사이에 따로 표시했습니다.</p>
 
   <div class="day d1">
     <div class="dh"><b>1일차</b><span>8월 21일 금요일</span></div>
     <div class="ev"><span class="tm">08:55</span><div><h3>용산역 · 영등포역 집결</h3><p class="loc">승차역별 집결</p><p class="tip">용산역 09:14 출발, 영등포역 09:27 출발입니다. 승차권은 협회에서 일괄 예매하며, 출발 15분 전까지 도착해 주세요.</p></div></div>
-    <div class="hop"><i>열차</i><b>용산 09:14 · 영등포 09:27</b><span>장항선 → 홍성역</span></div>
-    <div class="ev"><span class="tm">11:50</span><div><h3>홍성역 도착</h3><p class="loc">렌터카 인수</p><p class="tip">역과 렌터카 지점이 2~3km 떨어져 있어 인수 방법을 사전에 안내합니다.</p></div></div>
-    <div class="hop car"><i>차량</i><b>25분</b><span>홍성역 → 홍주살이 · 17km</span></div>
-    <div class="ev"><span class="tm">12:15</span><div><h3>점심식사</h3><p class="loc">오누이마을행복식당</p></div></div>
-    <div class="ev"><span class="tm">13:10</span><div><h3>정기회의 ①</h3><p class="loc">오누이강당</p><p class="tip">상반기 활동 실적보고</p></div></div>
+    <div class="hop"><i>열차</i><b>용산 09:14 · 영등포 09:27</b><span>장항선 → 광천역 11:36 · 약 2시간 20분</span></div>
+    <div class="ev"><span class="tm">11:36</span><div><h3>광천역 도착</h3><p class="loc">렌터카 인수</p><p class="tip">자차로 오시는 이상표 · 김민재 위원은 12:00 홍주살이 도착 예정입니다.</p></div></div>
+    <div class="hop car"><i>차량</i><b>20분</b><span>광천역 → 홍주살이 · 12km</span></div>
+    <div class="ev"><span class="tm">12:00</span><div><h3>점심식사</h3><p class="loc">오누이마을행복식당</p></div></div>
+    <div class="ev"><span class="tm">13:00</span><div><h3>정기회의 ①</h3><p class="loc">오누이강당</p><p class="tip">상반기 활동 실적보고</p></div></div>
     <div class="hop car"><i>차량</i><b>50분</b><span>홍주살이 → 보령 성주계곡 · 35km</span></div>
     <div class="ev"><span class="tm">15:00</span><div><h3>성주계곡 나들이</h3><p class="loc">성주산자연휴양림</p><p class="tip">16:30까지</p></div></div>
     <div class="hop car"><i>차량</i><b>40분</b><span>성주계곡 → 홍동식당 · 30km</span></div>
     <div class="ev"><span class="tm">17:10</span><div><h3>저녁식사</h3><p class="loc">맛좋은 홍동식당</p></div></div>
     <div class="hop car"><i>차량</i><b>15분</b><span>홍동식당 → 홍주살이 · 7km</span></div>
-    <div class="ev"><span class="tm">19:00</span><div><h3>참여자 네트워크</h3><p class="loc">홍주살이 문화체험</p><p class="tip">21:00까지 · 이후 숙박</p></div></div>
+    <div class="ev"><span class="tm">19:00</span><div><h3>참여자 네트워크</h3><p class="loc">홍주살이 문화체험</p><p class="tip">21:00까지 · 이후 숙박 · 황흥기 위원 20:30 자차 도착 예정</p></div></div>
   </div>
 
   <div class="day d2">
@@ -483,11 +485,11 @@ a{color:var(--blue);text-decoration:none}
     <div class="hop car"><i>차량</i><b>30분</b><span>홍주살이 → 미옥서원 · 18km</span></div>
     <div class="ev"><span class="tm">10:00</span><div><h3>미옥서원 관람 및 정기회의 ②</h3><p class="loc">보령 청소면 숲속서점</p><p class="tip">11:30까지 · 10시 개관</p></div></div>
     <div class="hop car"><i>차량</i><b>20분</b><span>미옥서원 → 조선옥 · 11km</span></div>
-    <div class="ev"><span class="tm">11:50</span><div><h3>점심식사</h3><p class="loc">조선옥 (광천읍)</p><p class="tip">12:45까지 · 열차 시각에 맞춰 일찍 마칩니다.</p></div></div>
-    <div class="hop car"><i>차량</i><b>25분</b><span>조선옥 → 홍성역 · 17km</span></div>
-    <div class="ev"><span class="tm">13:10</span><div><h3>홍성역 도착</h3><p class="loc">렌터카 반납</p></div></div>
-    <div class="hop"><i>열차</i><b>무궁화 1278 · 13:28</b><span>홍성 → 용산 15:49 · 2시간 21분</span></div>
-    <div class="ev"><span class="tm">15:49</span><div><h3>용산역 도착 · 해산</h3><p class="loc">용산역</p><p class="tip">자차로 오신 분은 조선옥에서 개별 출발하셔도 됩니다.</p></div></div>
+    <div class="ev"><span class="tm">11:50</span><div><h3>점심식사</h3><p class="loc">조선옥 (광천읍)</p><p class="tip">12:40까지 · 광천역과 가까워 이동 부담이 적습니다.</p></div></div>
+    <div class="hop car"><i>차량</i><b>10분</b><span>조선옥 → 광천역 · 1.5km</span></div>
+    <div class="ev"><span class="tm">12:55</span><div><h3>광천역 도착</h3><p class="loc">렌터카 반납</p></div></div>
+    <div class="hop"><i>열차</i><b>광천 13:14 출발</b><span>영등포 15:36 · 용산 15:49 도착</span></div>
+    <div class="ev"><span class="tm">15:36</span><div><h3>영등포역 · 용산역 도착 · 해산</h3><p class="loc">영등포 15:36 · 용산 15:49</p><p class="tip">하차역은 각자 선택한 곳으로 내리시면 됩니다. 자차로 오신 분은 조선옥에서 개별 출발하셔도 됩니다.</p></div></div>
   </div>
 
   <p class="ask">이동 시간과 거리는 대략치입니다. 오서산을 돌아가는 산길 구간이 있어 오후 일정은 여유를 두었습니다.</p>
@@ -505,10 +507,10 @@ a{color:var(--blue);text-decoration:none}
       <p class="lk"><a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&amp;query=%EC%B6%A9%EB%82%A8%20%ED%99%8D%EC%84%B1%EA%B5%B0%20%EC%9E%A5%EA%B3%A1%EB%A9%B4%20%ED%99%8D%EB%82%A8%EB%8F%99%EB%A1%9C%20473%EB%B2%88%EA%B8%B8%2079-22">지도 보기</a></p></article>
 
     <article class="pc"><span class="tag">집결 · 해산 · 렌터카</span>
-      <h3>홍성역</h3>
-      <p class="ad">충남 홍성군 홍성읍 고암리 442-3</p>
-      <p class="de">장항선. 렌터카 지점이 역에서 2~3km 떨어져 있어 인수·반납 방법을 사전 확인합니다.</p>
-      <p class="lk"><a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&amp;query=%ED%99%8D%EC%84%B1%EC%97%AD">지도 보기</a></p></article>
+      <h3>광천역</h3>
+      <p class="ad">충남 홍성군 광천읍 광천로 214</p>
+      <p class="de">장항선. 하행 11:36 도착, 복귀 13:14 출발 모두 이 역입니다. 렌터카 인수·반납 장소는 확정 후 안내합니다.</p>
+      <p class="lk"><a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&amp;query=%EA%B4%91%EC%B2%9C%EC%97%AD">지도 보기</a></p></article>
 
     <article class="pc"><span class="tag">1일차 점심</span>
       <h3>오누이마을행복식당</h3>
@@ -555,30 +557,46 @@ a{color:var(--blue);text-decoration:none}
    Apps Script 웹앱 URL. 배포 후 /exec 로 끝나는 주소를 붙여넣으세요.
    비워 두면 이 기기(브라우저)에만 저장됩니다.
    ─────────────────────────────────────────────────────────── */
-var API_URL = "https://script.google.com/macros/s/AKfycby55k32ubm761ZmLhYsunUmhoLYWJSaSkPDMQvCuDPzm40pCO4lXK_pFboGLFwjqPyZ/exec";
+var API_URL = "";
 
 var KEY   = "sasw-workshop-2026";
 var CKEY  = KEY + ":snapshot";   /* 마지막으로 받아온 서버 값 — 첫 화면을 바로 그리는 용도 */
-var LABEL = { full:"전일정 참석", part:"부분 참석", tbd:"확인 중", no:"불참" };
-var SHORT = { full:"전일정", part:"부분", tbd:"확인 중", no:"불참" };
-var ORDER = ["full","part","tbd","no"];
-var GCLS  = { full:"g1", part:"g2", tbd:"g3", no:"g4" };
-var CCLS  = { full:"c-f", part:"c-p", tbd:"c-t", no:"c-x" };
-var KCLS  = { full:"k1", part:"k2", tbd:"k3", no:"k4" };
-var VALID = { full:1, part:1, tbd:1, no:1 };
+var LABEL = { full:"전일정 참석", day1:"1일차 참석", late:"후발대 참석", tbd:"확인 중", no:"불참" };
+var SHORT = { full:"전일정", day1:"1일차", late:"후발대", tbd:"확인 중", no:"불참" };
+var ORDER = ["full","day1","late","tbd","no"];
+var GCLS  = { full:"g1", day1:"g2", late:"g5", tbd:"g3", no:"g4" };
+var CCLS  = { full:"c-f", day1:"c-p", late:"c-l", tbd:"c-t", no:"c-x" };
+var KCLS  = { full:"k1", day1:"k2", late:"k5", tbd:"k3", no:"k4" };
+var VALID = { full:1, day1:1, late:1, tbd:1, no:1 };
+function joins(st){ return st === "full" || st === "day1" || st === "late"; }
 
 /* ── 하행 열차 ──
    grp:"g" 단체(전일정) · grp:"l" 후발 · kind s=새마을 m=무궁화 */
 var TRAINS = [
-  {id:"g1", grp:"g", kind:"g", name:"단체 승차",  no:"", from:"용산역",   dep:"09:14", to:"홍성역", arr:"", fare:""},
-  {id:"g2", grp:"g", kind:"g", name:"단체 승차",  no:"", from:"영등포역", dep:"09:27", to:"홍성역", arr:"", fare:""},
+  /* 하행 단체 — 모두 광천역 도착 */
+  {id:"g1", grp:"g", kind:"g", name:"단체", no:"", from:"용산역",   dep:"09:14", to:"광천역", arr:"11:36", fare:"단체 예매"},
+  {id:"g2", grp:"g", kind:"g", name:"단체", no:"", from:"영등포역", dep:"09:27", to:"광천역", arr:"11:36", fare:"단체 예매"},
+  /* 하행 개별 — 후발 참석 */
   {id:"1207", grp:"l", kind:"s", name:"새마을", no:"1207", from:"용산역", dep:"15:28", to:"광천역", arr:"17:50", fare:"15,500원"},
   {id:"1283", grp:"l", kind:"m", name:"무궁화", no:"1283", from:"용산역", dep:"16:25", to:"광천역", arr:"18:55", fare:"10,400원"},
   {id:"1209", grp:"l", kind:"s", name:"새마을", no:"1209", from:"용산역", dep:"17:52", to:"광천역", arr:"20:13", fare:"15,500원"},
   {id:"1285", grp:"l", kind:"m", name:"무궁화", no:"1285", from:"용산역", dep:"18:21", to:"광천역", arr:"20:54", fare:"10,400원"},
-  {id:"1287", grp:"l", kind:"m", name:"무궁화", no:"1287", from:"용산역", dep:"20:43", to:"광천역", arr:"23:11", fare:"10,400원"},
-  {id:"1278", grp:"u", kind:"m", name:"무궁화", no:"1278", from:"홍성역", dep:"13:28", to:"용산역", arr:"15:49", fare:"9,600원"}
+  {id:"1287", grp:"l", kind:"m", name:"무궁화", no:"1287", from:"용산역", dep:"20:43", to:"광천역", arr:"23:11", fare:"10,400원"}
 ];
+
+/* 2일차 복귀 — 같은 열차이고 하차역만 다릅니다 */
+var BACKS = [
+  {id:"u1", train:true, from:"광천역", dep:"13:14", to:"영등포역", arr:"15:36", label:"광천 13:14 → 영등포 15:36"},
+  {id:"u2", train:true, from:"광천역", dep:"13:14", to:"용산역",   arr:"15:49", label:"광천 13:14 → 용산 15:49"},
+  {id:"x1", label:"1일차만 참석 · 개별 귀가"},
+  {id:"x2", label:"자차 이동"},
+  {id:"x3", label:"현지 잔류"}
+];
+function backOf(id){
+  if(!id) return null;
+  for(var i=0;i<BACKS.length;i++) if(BACKS[i].id === String(id).trim()) return BACKS[i];
+  return null;
+}
 
 function train(id){
   if(!id) return null;
@@ -595,40 +613,41 @@ function train(id){
 }
 function trainText(t){
   if(!t) return "";
-  if(t.grp === "g") return t.from + " " + t.dep + " 탑승";
-  return t.name + " " + t.no + " · " + t.from.replace("역","") + " " + t.dep +
-         " → " + t.to.replace("역","") + " " + t.arr;
+  if(t.grp === "g") return t.from + " " + t.dep + " → 광천 " + t.arr;
+  return t.name + " " + t.no + " · 용산 " + t.dep + " → 광천 " + t.arr;
 }
 
 /* ── 명단 ──
    id는 회신 저장의 기준입니다. 한 번 정한 뒤에는 바꾸지 마세요. */
 var BASE = [
- /* ── 전일정 참석 9명 ──────────────────────────────
-    2026. 8. 6. 기준 확정본. 시트가 비어 있으면 이 값이 그대로 보입니다. */
- {id:1, name:"김아래미", group:"위원장",   org:"서울여자대학교",              title:"교수",         status:"full"},
- {id:2, name:"이상현",   group:"부위원장", org:"신목종합사회복지관",          title:"부장",         status:"full", train:"g2", shirt:"105"},
- {id:3, name:"김유리",   group:"운영위원", org:"서대문구재가노인복지기관",    title:"관장",         status:"full"},
- {id:4, name:"권민지",   group:"전문위원", org:"방화11종합사회복지관",        title:"과장",         status:"full", train:"g2"},
- {id:5, name:"송경태",   group:"전문위원", org:"도봉서원종합사회복지관",      title:"과장",         status:"full"},
- {id:6, name:"조상우",   group:"전문위원", org:"태화해뜨는샘",                title:"사무국장",     status:"full", train:"g2"},
- {id:7, name:"고석우",   group:"협회",     org:"서울특별시사회복지사협회",    title:"과장",         status:"full", train:"g2", shirt:"105"},
- {id:8, name:"이재중",   group:"협회",     org:"서울특별시사회복지사협회",    title:"사회복지사",   status:"full", train:"g1", shirt:"105"},
- {id:15,name:"정순영",   group:"운영위원", org:"관악구지역사회보장협의체",    title:"사무국장",     status:"full", train:"g2"},
+ /* 2026. 8. 6. 구글시트 확정본 — 참석 15명 · 불참 2명 */
+ /* 전일정 9명 */
+ {id:1, name:"김아래미", group:"위원장",   org:"서울여자대학교",              title:"교수",         status:"full", transport:"기차", train:"g1", back:"u2", shirt:"95"},
+ {id:2, name:"이상현",   group:"부위원장", org:"신목종합사회복지관",          title:"부장",         status:"full", transport:"기차", train:"g2", back:"u1", shirt:"105"},
+ {id:3, name:"김유리",   group:"운영위원", org:"서대문구재가노인복지기관",    title:"관장",         status:"full", transport:"기차", train:"g2", back:"x1", shirt:"105", note:"복귀는 자체 이동"},
+ {id:4, name:"권민지",   group:"전문위원", org:"방화11종합사회복지관",        title:"과장",         status:"full", transport:"기차", train:"g2", back:"u1", shirt:"105"},
+ {id:5, name:"송경태",   group:"전문위원", org:"도봉서원종합사회복지관",      title:"과장",         status:"full", transport:"기차", train:"g1", back:"u2", shirt:"105"},
+ {id:6, name:"조상우",   group:"전문위원", org:"태화해뜨는샘",                title:"사무국장",     status:"full", transport:"기차", train:"g2", back:"u1"},
+ {id:7, name:"고석우",   group:"협회",     org:"서울특별시사회복지사협회",    title:"과장",         status:"full", transport:"기차", train:"g2", back:"x3", shirt:"105", note:"홍성 잔류"},
+ {id:8, name:"이재중",   group:"협회",     org:"서울특별시사회복지사협회",    title:"사회복지사",   status:"full", transport:"기차", train:"g1", back:"u2", shirt:"105"},
+ {id:15,name:"정순영",   group:"운영위원", org:"관악구지역사회보장협의체",    title:"사무국장",     status:"full", transport:"기차", train:"g2", back:"u1"},
 
- /* ── 부분 참석 6명 ── */
- {id:9, name:"이상표",   group:"운영위원", org:"시립고덕양로원",              title:"원장",         status:"part", day:"1일차", transport:"자차", arr:"12:00"},
- {id:10,name:"김민재",   group:"운영위원", org:"파라다이스복지재단",          title:"매니저(과장)", status:"part", day:"1일차", transport:"자차", arr:"12:00"},
- {id:11,name:"황흥기",   group:"전문위원", org:"넥스트임팩트",                title:"대표",         status:"part", day:"1일차", transport:"기차"},
- {id:12,name:"정선영",   group:"전문위원", org:"신월종합사회복지관",          title:"부장",         status:"part", day:"1일차", transport:"기차", train:"1285"},
- {id:13,name:"노혜진",   group:"전문위원", org:"강서대학교",                  title:"교수",         status:"part", day:"1일차", transport:"기차", train:"1285"},
- {id:14,name:"심휘선",   group:"전문위원", org:"종로노인종합복지관",          title:"관장",         status:"part", day:"1일차", transport:"기차", train:"1285"},
+ /* 1일차 참석 2명 — 자차 */
+ {id:9, name:"이상표",   group:"운영위원", org:"시립고덕양로원",              title:"원장",         status:"day1", transport:"자차", arr:"12:00", back:"x1", shirt:"105"},
+ {id:10,name:"김민재",   group:"운영위원", org:"파라다이스복지재단",          title:"매니저(과장)", status:"day1", transport:"자차", arr:"12:00", back:"x1"},
 
- /* ── 불참 2명 ── */
+ /* 후발대 참석 4명 */
+ {id:12,name:"정선영",   group:"전문위원", org:"신월종합사회복지관",          title:"부장",         status:"late", transport:"기차", train:"1285", back:"u1", shirt:"100"},
+ {id:13,name:"노혜진",   group:"전문위원", org:"강서대학교",                  title:"교수",         status:"late", transport:"기차", train:"1285", back:"u2"},
+ {id:14,name:"심휘선",   group:"전문위원", org:"종로노인종합복지관",          title:"관장",         status:"late", transport:"기차", train:"1285", back:"u2"},
+ {id:11,name:"황흥기",   group:"전문위원", org:"넥스트임팩트",                title:"대표",         status:"late", transport:"자차", arr:"20:30", back:"x2", shirt:"105"},
+
+ /* 불참 2명 */
  {id:16,name:"오순희",   group:"전문위원", org:"양천거점형 우리동네키움센터", title:"센터장",       status:"no"},
  {id:17,name:"조소연",   group:"전문위원", org:"사회복지연구소 마실",         title:"공동대표",     status:"no"}
 ];
 
-var FIELDS = ["status","day","transport","train","arr","shirt","note"];
+var FIELDS = ["status","transport","train","back","arr","shirt","note"];
 var SIZES  = ["95","100","105"];
 
 function fresh(){
@@ -650,9 +669,9 @@ function byId(id){
 }
 /* 후발 정렬·표시에 쓰는 도착 시각 (열차를 골랐으면 열차 도착 시각) */
 function arrOf(p){
+  if(p.transport === "자차") return p.arr || "";
   var t = train(p.train);
-  if(t && t.arr) return t.arr;
-  return p.arr || "";
+  return t && t.arr ? t.arr : (p.arr || "");
 }
 
 /* ── 상태 표시 ── */
@@ -715,13 +734,13 @@ function applyRows(rows){
   rows.forEach(function(r){
     var p = byId(r.id); if(!p) return;
     if(VALID[r.status]) p.status = r.status;
-    p.day = r.day || ""; p.transport = r.transport || "";
+    p.transport = r.transport || "";
     p.train = r.train || "";
     if(!p.train && r.trainLabel){          /* 예전 데이터 구제 */
       var t0 = train(r.trainLabel);
       if(t0) p.train = t0.id;
     }
-    p.arr = r.arr || ""; p.shirt = r.shirt || ""; p.note = r.note || "";
+    p.back = r.back || ""; p.arr = r.arr || ""; p.shirt = r.shirt || ""; p.note = r.note || "";
     n++;
   });
   return n;
@@ -786,11 +805,14 @@ function push(p){
   status("wait", "저장 중");
   render(true);                               /* 입력값을 즉시 화면에 반영 */
   var t = train(p.train);
+  var bk = backOf(p.back);
   var body = JSON.stringify({
-    id:p.id, name:p.name, status:p.status, day:p.day, transport:p.transport,
+    id:p.id, name:p.name, status:p.status, transport:p.transport,
     train:p.train, trainLabel: t ? trainText(t) : "",
     from: t ? t.from : "", dep: t ? t.dep : "",
-    to: t ? t.to : "", arr: arrOf(p), shirt:p.shirt, note:p.note
+    to: t ? t.to : "", arr: arrOf(p),
+    back:p.back, backLabel: bk ? bk.label : "",
+    shirt:p.shirt, note:p.note
   });
   fetch(API_URL, {
     method:"POST", redirect:"follow",
@@ -823,45 +845,49 @@ function toast(msg){
 
 /* ── 명단 항목 아래 표시할 조각 ── */
 function bits(p){
-  var a = [], t = train(p.train);
-  if(p.status === "full"){
-    a.push(t ? trainText(t) : "승차역 미정");
+  var a = [], t = train(p.train), bk = backOf(p.back);
+  if(p.status === "no") return a;
+
+  if(p.transport === "자차"){
+    a.push(p.arr ? "자차 · " + p.arr + " 도착" : "자차 · 도착 시각 미정");
+  } else if(t){
+    a.push(t.grp === "g" ? "하행 " + t.from + " " + t.dep + " → 광천 " + t.arr
+                         : "하행 " + t.name + " " + t.no + " · 용산 " + t.dep + " → 광천 " + t.arr);
+  } else {
+    a.push("하행 미정");
   }
-  if(p.status === "part"){
-    a.push(p.day || "1일차");
-    a.push("교통편 " + (p.transport || "미정"));
-    if(p.transport === "기차"){
-      a.push(t ? trainText(t) : "열차 선택 필요");
-    } else if(p.arr){
-      a.push(p.arr + " 도착 예정");
-    } else if(p.transport === "자차" || p.transport === "기타"){
-      a.push("도착 시각 미정");
-    }
-  }
-  if(p.status !== "no") a.push(p.shirt ? "티셔츠 " + p.shirt : "티셔츠 미정");
+
+  a.push(bk ? "복귀 " + bk.label : "복귀 미정");
+  a.push(p.shirt ? "티셔츠 " + p.shirt : "티셔츠 미정");
   if(p.note) a.push(p.note);
   return a;
 }
+
 
 /* ── 하행 열차 안내 ── */
 function renderTrains(){
   var g = TRAINS.filter(function(t){ return t.grp === "g"; });
   var l = TRAINS.filter(function(t){ return t.grp === "l"; });
-  var u = TRAINS.filter(function(t){ return t.grp === "u"; });
+
   var line = function(t){
     return '<li><span class="kd '+t.kind+'">'+esc(t.grp==="g" ? "단체" : t.name)+
       (t.no ? " "+esc(t.no) : "")+'</span>'+
       '<span class="rt">'+esc(t.from.replace("역",""))+' '+esc(t.dep)+
       (t.arr ? ' → '+esc(t.to.replace("역",""))+' '+esc(t.arr) : ' 출발')+
-      (t.grp==="g" ? '<em>홍성역 도착</em>' : '')+'</span>'+
+      (t.grp==="g" ? '<em>단체</em>' : '')+'</span>'+
       '<span class="fa">'+esc(t.fare || "단체 예매")+'</span></li>';
   };
   $("#trains").innerHTML = '<div class="tt">'+
     '<h3>열차 안내</h3>'+
-    '<p>전일정 참석은 단체 편성 중 편한 승차역을, 후발 참석은 광천역 도착 편성을 골라 주세요. 복귀 열차는 전원 같은 편성입니다.</p>'+
-    '<p class="sub">전일정 · 단체 승차</p><ul>'+g.map(line).join("")+'</ul>'+
-    '<p class="sub">후발 · 용산 → 광천</p><ul>'+l.map(line).join("")+'</ul>'+
-    '<p class="sub">2일차 복귀 · 홍성 → 용산 (단체)</p><ul>'+u.map(line).join("")+'</ul>'+
+    '<p>하행·복귀 모두 광천역을 씁니다. 복귀는 전원 같은 열차이고 하차역만 다릅니다.</p>'+
+    '<p class="sub">1일차 하행 · 단체</p><ul>'+g.map(line).join("")+'</ul>'+
+    '<p class="sub">1일차 하행 · 개별(후발대)</p><ul>'+l.map(line).join("")+'</ul>'+
+    '<p class="sub">2일차 복귀 · 광천 13:14 출발 (단체)</p><ul>'+
+      BACKS.filter(function(k){ return k.train; }).map(function(k){
+        var n = people.filter(function(x){ return x.back === k.id; }).length;
+        return '<li><span class="kd g">하차</span><span class="rt">'+esc(k.to.replace("역",""))+' '+esc(k.arr)+
+          '<em>광천 '+esc(k.dep)+' 출발</em></span><span class="fa">'+n+'명</span></li>';
+      }).join("")+'</ul>'+
     '</div>';
 }
 
@@ -878,8 +904,9 @@ function render(force){
   if(!force && now === lastSig) return;                               /* 바뀐 게 없으면 그대로 둔다 */
   lastSig = now;
 
-  var c = {full:0, part:0, tbd:0, no:0};
-  people.forEach(function(p){ c[p.status]++; });
+  var c = {};
+  ORDER.forEach(function(k){ c[k] = 0; });
+  people.forEach(function(p){ if(c[p.status] !== undefined) c[p.status]++; });
 
   $("#tally").innerHTML = ORDER.map(function(k){
     return '<div class="'+KCLS[k]+'"><b>'+c[k]+'</b><span>'+SHORT[k]+'</span></div>';
@@ -888,19 +915,19 @@ function render(force){
   $("#briefSum").textContent = people.length + "명 중 " +
     ORDER.map(function(k){ return SHORT[k] + " " + c[k] + "명"; }).join(" · ");
 
-  var part = people.filter(function(p){ return p.status === "part"; });
+  var part = people.filter(function(p){ return p.status === "late" || (joins(p.status) && p.transport === "자차"); });
   if(part.length){
     var sorted = part.slice().sort(function(a,b){
       var x = arrOf(a), y = arrOf(b);
       if(x && y) return x < y ? -1 : 1;
       if(x) return -1; if(y) return 1; return 0;
     });
-    $("#late").innerHTML = '<div class="late"><h3>후발 도착<em>'+part.length+'명</em></h3>'+
-      '<p>기차로 오시는 분은 광천역 도착입니다. 광천역이 홍주살이에 20분쯤 더 가까워 그쪽으로 픽업 나갑니다. 아래 명단에서 본인 항목의 수정을 눌러 열차를 골라 주세요.</p><ul>'+
+    $("#late").innerHTML = '<div class="late"><h3>개별 도착<em>'+part.length+'명</em></h3>'+
+      '<p>단체 열차와 따로 오시는 분들입니다. 열차는 모두 광천역 도착이라 광천역으로 픽업 나갑니다.</p><ul>'+
       sorted.map(function(p){
         var t = train(p.train);
-        var h = [(p.day || "1일차"), (p.transport || "교통편 미정")];
-        if(p.transport === "기차") h.push(t ? (t.name+" "+t.no) : "열차 선택 필요");
+        var h = [SHORT[p.status], (p.transport || "미정")];
+        if(p.transport === "기차") h.push(t ? (t.name + " " + t.no) : "열차 선택 필요");
         return '<li><b>'+esc(arrOf(p) || "—")+'</b><span><span class="w">'+esc(p.name)+
           '</span><span class="h">'+esc(h.join(" · "))+'</span></span></li>';
       }).join("") + '</ul></div>';
@@ -909,10 +936,10 @@ function render(force){
   }
 
   /* 예매를 위해 아직 받아야 할 회신 */
-  var needBoard = people.filter(function(p){ return p.status==="full" && !train(p.train); }).length;
-  var needTrain = people.filter(function(p){ return p.status==="part" && p.transport==="기차" && !train(p.train); }).length;
-  var needTime  = people.filter(function(p){ return p.status==="part" && p.transport!=="기차" && !p.arr; }).length;
-  var joining   = people.filter(function(p){ return p.status !== "no"; });
+  var joining   = people.filter(function(p){ return joins(p.status); });
+  var needBoard = joining.filter(function(p){ return p.transport === "기차" && !train(p.train); }).length;
+  var needTrain = joining.filter(function(p){ return !backOf(p.back); }).length;
+  var needTime  = joining.filter(function(p){ return p.transport !== "기차" && !p.arr; }).length;
   var needShirt = joining.filter(function(p){ return !p.shirt; }).length;
 
   var sc = {}; SIZES.forEach(function(z){ sc[z] = 0; });
@@ -932,7 +959,7 @@ function render(force){
     return '<span'+(n?'':' class="done"')+'>'+esc(label)+' <b>'+n+'</b>명</span>';
   };
   $("#todo").innerHTML = '<div class="todo">'+
-    chip(needBoard,"승차역 회신")+chip(needTrain,"열차 편성 회신")+chip(needTime,"도착 시각 회신")+
+    chip(needBoard,"하행 열차")+chip(needTrain,"복귀 열차")+chip(needTime,"도착 시각")+
     chip(needShirt,"티셔츠 사이즈")+
     '</div>';
 
@@ -968,27 +995,28 @@ function editor(p){
   var lOpts = opt("", "선택해 주세요", !p.train);
   TRAINS.forEach(function(t){
     var label = t.grp === "g"
-      ? t.from + " " + t.dep + " 출발"
+      ? t.from + " " + t.dep + " 출발 → 광천 " + t.arr
       : t.name + " " + t.no + " · 용산 " + t.dep + " → 광천 " + t.arr;
     var o = opt(t.id, label, p.train === t.id);
     if(t.grp === "g") gOpts += o; else lOpts += o;
   });
+  var bOpts = opt("", "선택해 주세요", !p.back) +
+    BACKS.map(function(k){ return opt(k.id, k.label, p.back === k.id); }).join("");
 
   return '<div class="ed">'+
-    '<div class="fr"><label>참석 여부</label><select data-f="status">'+
-      opt("full","전일정 참석",p.status==="full")+opt("part","부분 참석",p.status==="part")+
-      opt("tbd","확인 중",p.status==="tbd")+opt("no","불참",p.status==="no")+'</select></div>'+
+    '<div class="fr"><label>참석 구분</label><select data-f="status">'+
+      opt("full","전일정 참석",p.status==="full")+opt("day1","1일차 참석",p.status==="day1")+
+      opt("late","후발대 참석",p.status==="late")+opt("tbd","확인 중",p.status==="tbd")+
+      opt("no","불참",p.status==="no")+'</select></div>'+
 
-    '<div class="fr" data-w="full"><label>승차역</label><select data-f="trainG">'+gOpts+'</select></div>'+
+    '<div class="fr" data-w="go"><label>이동 방법</label><select data-f="transport">'+
+      opt("기차","기차",(p.transport||"기차")==="기차")+opt("자차","자차",p.transport==="자차")+
+      opt("기타","기타",p.transport==="기타")+'</select></div>'+
 
-    '<div class="fr" data-w="part"><label>도착일</label><select data-f="day">'+
-      opt("1일차","1일차 (8/21)",(p.day||"1일차")==="1일차")+
-      opt("2일차","2일차 (8/22)",p.day==="2일차")+'</select></div>'+
-    '<div class="fr" data-w="part"><label>교통편</label><select data-f="transport">'+
-      opt("기차","기차",(p.transport||"미정")==="기차")+opt("자차","자차",p.transport==="자차")+
-      opt("기타","기타",p.transport==="기타")+opt("미정","미정",(p.transport||"미정")==="미정")+'</select></div>'+
-    '<div class="fr" data-w="train"><label>열차 편성</label><select data-f="trainL">'+lOpts+'</select></div>'+
+    '<div class="fr" data-w="tg"><label>하행 열차</label><select data-f="trainG">'+gOpts+'</select></div>'+
+    '<div class="fr" data-w="tl"><label>하행 열차</label><select data-f="trainL">'+lOpts+'</select></div>'+
     '<div class="fr" data-w="car"><label>도착 예정</label><input type="time" data-f="arr" value="'+esc(p.arr)+'"></div>'+
+    '<div class="fr" data-w="go"><label>복귀</label><select data-f="back">'+bOpts+'</select></div>'+
 
     '<div class="fr" data-w="shirt"><label>티셔츠</label><select data-f="shirt">'+
       opt("","선택해 주세요",!p.shirt)+SIZES.map(function(z){ return opt(z,z,p.shirt===z); }).join("")+'</select></div>'+
@@ -1000,11 +1028,12 @@ function editor(p){
 function sync(ed){
   var v = ed.querySelector('[data-f="status"]').value;
   var t = ed.querySelector('[data-f="transport"]').value;
+  var go = v === "full" || v === "day1" || v === "late";
   var show = {
-    full: v === "full",
-    part: v === "part",
-    train: v === "part" && t === "기차",
-    car: v === "part" && (t === "자차" || t === "기타"),
+    go: go,
+    tg: go && t === "기차" && v !== "late",     /* 전일정·1일차 → 단체 편성 */
+    tl: go && t === "기차" && v === "late",     /* 후발대 → 개별 편성 */
+    car: go && t !== "기차",
     shirt: v !== "no"
   };
   Array.prototype.forEach.call(ed.querySelectorAll("[data-w]"), function(el){
@@ -1042,20 +1071,21 @@ document.getElementById("s4").addEventListener("click", function(e){
       var el = ed2.querySelector('[data-f="'+f+'"]');
       return el ? (typeof el.value === "string" ? el.value.trim() : el.value) : "";
     };
-    p2.status    = val("status") || "tbd";
-    p2.note      = val("note");
-    p2.shirt     = p2.status === "no" ? "" : val("shirt");
-    p2.day       = p2.status === "part" ? val("day") : "";
-    p2.transport = p2.status === "part" ? val("transport") : "";
+    p2.status = val("status") || "tbd";
+    p2.note   = val("note");
+    p2.shirt  = p2.status === "no" ? "" : val("shirt");
 
-    if(p2.status === "full"){
-      p2.train = val("trainG"); p2.arr = "";
-    } else if(p2.status === "part" && p2.transport === "기차"){
-      p2.train = val("trainL"); p2.arr = "";
-    } else if(p2.status === "part"){
-      p2.train = ""; p2.arr = val("arr");
+    if(!joins(p2.status)){
+      p2.transport = ""; p2.train = ""; p2.back = ""; p2.arr = "";
     } else {
-      p2.train = ""; p2.arr = "";
+      p2.transport = val("transport") || "기차";
+      p2.back = val("back");
+      if(p2.transport === "기차"){
+        p2.train = p2.status === "late" ? val("trainL") : val("trainG");
+        p2.arr = "";
+      } else {
+        p2.train = ""; p2.arr = val("arr");
+      }
     }
     closeRow(pr2);          /* 먼저 닫아야 화면이 바로 갱신된다 */
     push(p2);
