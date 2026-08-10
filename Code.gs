@@ -81,6 +81,9 @@ function cols_(head) {
     else if (h === '이동방법') c.move = i + 1;
     else if (h === '숙소') c.room = i + 1;
     else if (h === '티셔츠') c.shirt = i + 1;
+    else if (h === '메모' || h === '비고') c.note = i + 1;
+    else if (h.indexOf('하행') >= 0) c.down = i + 1;
+    else if (h.indexOf('상행') >= 0) c.up = i + 1;
     else if (h.indexOf('기차시간') === 0) {
       if (!c.down) c.down = i + 1;
       else if (!c.up) c.up = i + 1;
@@ -189,7 +192,7 @@ function doGet() {
           back: parseUp_(get(col.up)),
           room: parseRoom_(get(col.room)),
           shirt: parseShirt_(get(col.shirt)),
-          note: ''
+          note: get(col.note)
         });
       }
     }
@@ -265,6 +268,7 @@ function doPost(e) {
       put(col.room, ROOM_TXT[d.room] !== undefined ? ROOM_TXT[d.room] : '');
       put(col.shirt, txt_(d.shirt) || '미정');
     }
+    put(col.note, txt_(d.note));
 
     SpreadsheetApp.flush();
     return json_({ ok: true, name: name, row: target });
@@ -291,6 +295,9 @@ function setup() {
 
 /** 명단을 읽어서 페이지에 넘길 값이 제대로 나오는지 확인 */
 function preview() {
+  /* 시트에 메모 열이 없을 때 쓸 기본 메모 */
+  var NOTES = { 3:'숙박 없이 자체 이동', 7:'차량 운행 · 홍성 잔류', 8:'차량 운행' };
+
   var res = JSON.parse(doGet().getContent());
   if (!res.ok) { Logger.log('실패: ' + res.error); return; }
   Logger.log('읽은 인원: ' + res.count + '명');
@@ -298,4 +305,181 @@ function preview() {
     var r = res.rows[i];
     Logger.log([r.id, r.name, r.status, r.transport, r.train || r.arr, r.back, r.room, r.shirt].join(' | '));
   }
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   시트 정비 도구
+   값을 표준 문구로 맞추고 드롭다운을 걸어, 손으로 적다 생기는
+   표기 흔들림을 없앱니다. 한 번만 돌리면 됩니다.
+   ═══════════════════════════════════════════════════════════ */
+
+var LIST_STATUS = ['전일정', '부분 참석', '후발대 참석', '확인 중', '불참'];
+var LIST_MOVE   = ['기차(단체)', '기차(개별)', '자차', '기타'];
+var LIST_DOWN   = [
+  '용산 09:14→광천 11:36', '영등포 09:27→광천 11:36',
+  '용산 15:28→광천 17:50', '용산 16:25→광천 18:55', '용산 17:52→광천 20:13',
+  '용산 18:21→광천 20:54', '용산 20:43→광천 23:11'
+];
+var LIST_UP     = ['광천 13:14 → 영등포 15:36', '광천 13:14 → 용산 15:49',
+                   '1일차만 참석', '자체 이동', '홍성 잔류'];
+var LIST_ROOM   = ['7인실', '1인실_1', '1인실_2', '1인실_3', '모듈', '-'];
+var LIST_SHIRT  = ['95', '100', '105', '미정'];
+
+function dropdown_(sh, col, first, count, list, strict) {
+  if (!col || count < 1) return;
+  var rule = SpreadsheetApp.newDataValidation()
+    .requireValueInList(list, true)
+    .setAllowInvalid(!strict)
+    .setHelpText('목록에서 고르세요: ' + list.join(' / '))
+    .build();
+  sh.getRange(first, col, count, 1).setDataValidation(rule);
+}
+
+/**
+ * 시트를 표준 형식으로 정비합니다.
+ * ① 지금 적힌 값을 해석해 표준 문구로 다시 적고
+ * ② 여섯 개 열에 드롭다운을 설치합니다.
+ * 연락처·성별·소속은 건드리지 않습니다.
+ */
+function normalizeSheet() {
+  var R = roster_();
+  var sh = R.sheet, col = R.col;
+  var first = R.headRow + 1;
+  var last = sh.getLastRow();
+  if (last < first) { Logger.log('정비할 행이 없습니다.'); return; }
+
+  var n = last - first + 1;
+  var vals = sh.getRange(first, 1, n, R.width).getValues();
+  var changed = 0, unknown = [];
+
+  for (var i = 0; i < vals.length; i++) {
+    var r = vals[i];
+    var get = function (c) { return c ? txt_(r[c - 1]) : ''; };
+    var name = get(col.name);
+    if (!name) continue;
+    if (!IDS[name]) unknown.push(name);
+
+    var row = first + i;
+    var status = parseStatus_(get(col.status));
+    var move = parseMove_(get(col.move));
+    var down = parseDown_(get(col.down));
+    var back = parseUp_(get(col.up));
+    var room = parseRoom_(get(col.room));
+    var shirt = parseShirt_(get(col.shirt));
+
+    var set = function (c, val) {
+      if (!c) return;
+      var cell = sh.getRange(row, c);
+      if (txt_(cell.getValue()) !== val) { cell.setNumberFormat('@').setValue(val); changed++; }
+    };
+
+    set(col.status, STATUS_TXT[status] || '확인 중');
+    set(col.move, move === '자차' ? '자차'
+                : move === '기차' ? (down.train === 'g1' || down.train === 'g2' ? '기차(단체)' : '기차(개별)')
+                : move ? '기타' : '');
+    set(col.down, down.train ? DOWN_TXT[down.train] : (down.arr ? down.arr + ' 도착 예정' : ''));
+    set(col.up, back ? UP_TXT[back] : '');
+    set(col.room, room ? ROOM_TXT[room] : '');
+    set(col.shirt, shirt || '미정');
+  }
+
+  dropdown_(sh, col.status, first, n, LIST_STATUS, true);
+  dropdown_(sh, col.move,   first, n, LIST_MOVE,   true);
+  dropdown_(sh, col.down,   first, n, LIST_DOWN,   false);  // 자차 도착 시각도 적을 수 있게
+  dropdown_(sh, col.up,     first, n, LIST_UP,     true);
+  dropdown_(sh, col.room,   first, n, LIST_ROOM,   true);
+  dropdown_(sh, col.shirt,  first, n, LIST_SHIRT,  true);
+
+  SpreadsheetApp.flush();
+  Logger.log('정비 완료 · 고친 칸 ' + changed + '개 · 드롭다운 6개 열에 설치');
+  if (unknown.length) {
+    Logger.log('※ 페이지 명단에 없는 성명: ' + unknown.join(', ') + ' — Code.gs 의 IDS 와 index.html 의 BASE 에 추가해야 합니다.');
+  }
+  Logger.log('하행 열은 자차 도착 시각도 적을 수 있게 목록 밖 입력을 허용합니다(경고 표시만).');
+}
+
+/** 고치지 않고, 이상해 보이는 값만 찾아 보고합니다. */
+function checkSheet() {
+  var R = roster_();
+  var sh = R.sheet, col = R.col;
+  var first = R.headRow + 1, last = sh.getLastRow();
+  if (last < first) { Logger.log('행이 없습니다.'); return; }
+
+  var vals = sh.getRange(first, 1, last - first + 1, R.width).getValues();
+  var bad = 0;
+  for (var i = 0; i < vals.length; i++) {
+    var r = vals[i];
+    var get = function (c) { return c ? txt_(r[c - 1]) : ''; };
+    var name = get(col.name);
+    if (!name) continue;
+
+    var msg = [];
+    if (!IDS[name]) msg.push('페이지 명단에 없는 이름');
+    if (parseStatus_(get(col.status)) === 'tbd' && get(col.status)) msg.push('참석구분 해석 불가: ' + get(col.status));
+    var d = parseDown_(get(col.down));
+    if (get(col.down) && !d.train && !d.arr) msg.push('하행 해석 불가: ' + get(col.down));
+    if (get(col.up) && !parseUp_(get(col.up))) msg.push('상행 해석 불가: ' + get(col.up));
+    if (get(col.room) && !parseRoom_(get(col.room))) msg.push('숙소 해석 불가: ' + get(col.room));
+
+    if (msg.length) { bad++; Logger.log((first + i) + '행 ' + name + ' — ' + msg.join(' / ')); }
+  }
+  Logger.log(bad ? '문제 ' + bad + '건' : '모든 행이 정상으로 읽힙니다.');
+}
+
+/**
+ * 시트 내용을 index.html 의 BASE 배열 코드로 뽑아 줍니다.
+ * 실행 기록에 나온 내용을 그대로 복사해 index.html 의 BASE 를 바꿔 넣으면
+ * 시트를 못 읽는 상황에서도 최신 상태가 보입니다.
+ */
+function exportBase() {
+  var META = {
+    1:['김아래미','위원장','서울여자대학교','교수'],
+    2:['이상현','부위원장','신목종합사회복지관','부장'],
+    3:['김유리','운영위원','서대문구재가노인복지기관','관장'],
+    4:['권민지','전문위원','방화11종합사회복지관','과장'],
+    5:['송경태','전문위원','도봉서원종합사회복지관','과장'],
+    6:['조상우','전문위원','태화해뜨는샘','사무국장'],
+    7:['고석우','협회','서울특별시사회복지사협회','과장'],
+    8:['이재중','협회','서울특별시사회복지사협회','사회복지사'],
+    9:['이상표','운영위원','시립고덕양로원','원장'],
+    10:['김민재','운영위원','파라다이스복지재단','매니저(과장)'],
+    11:['황흥기','전문위원','넥스트임팩트','대표'],
+    12:['정선영','전문위원','신월종합사회복지관','부장'],
+    13:['노혜진','전문위원','강서대학교','교수'],
+    14:['심휘선','전문위원','종로노인종합복지관','관장'],
+    15:['정순영','운영위원','관악구지역사회보장협의체','사무국장'],
+    16:['오순희','전문위원','양천거점형 우리동네키움센터','센터장'],
+    17:['조소연','전문위원','사회복지연구소 마실','공동대표']
+  };
+
+  /* 시트에 메모 열이 없을 때 쓸 기본 메모 */
+  var NOTES = { 3:'숙박 없이 자체 이동', 7:'차량 운행 · 홍성 잔류', 8:'차량 운행' };
+
+  var res = JSON.parse(doGet().getContent());
+  if (!res.ok) { Logger.log('실패: ' + res.error); return; }
+
+  var byId = {};
+  for (var i = 0; i < res.rows.length; i++) byId[res.rows[i].id] = res.rows[i];
+
+  var out = ['var BASE = ['];
+  for (var id = 1; id <= 17; id++) {
+    var m = META[id];
+    if (!m) continue;
+    var r = byId[id] || { status:'no' };
+    var f = ['id:' + id, 'name:"' + m[0] + '"', 'group:"' + m[1] + '"',
+             'org:"' + m[2] + '"', 'title:"' + m[3] + '"', 'status:"' + (r.status || 'tbd') + '"'];
+    if (r.transport) f.push('transport:"' + r.transport + '"');
+    if (r.train)     f.push('train:"' + r.train + '"');
+    if (r.arr)       f.push('arr:"' + r.arr + '"');
+    if (r.back)      f.push('back:"' + r.back + '"');
+    if (r.room)      f.push('room:"' + r.room + '"');
+    if (r.shirt)     f.push('shirt:"' + r.shirt + '"');
+    var note = r.note || NOTES[id] || '';
+    if (note)        f.push('note:"' + note + '"');
+    out.push(' {' + f.join(', ') + '},');
+  }
+  out[out.length - 1] = out[out.length - 1].replace(/,$/, '');
+  out.push('];');
+  Logger.log(out.join('\n'));
 }
