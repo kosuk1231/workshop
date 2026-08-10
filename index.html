@@ -570,12 +570,12 @@ a{color:var(--blue);text-decoration:none}
    Apps Script 웹앱 URL. 배포 후 /exec 로 끝나는 주소를 붙여넣으세요.
    비워 두면 이 기기(브라우저)에만 저장됩니다.
    ─────────────────────────────────────────────────────────── */
-var API_URL = "https://script.google.com/macros/s/AKfycby55k32ubm761ZmLhYsunUmhoLYWJSaSkPDMQvCuDPzm40pCO4lXK_pFboGLFwjqPyZ/exec";
+var API_URL = "";
 
 var KEY   = "sasw-workshop-2026";
 var CKEY  = KEY + ":snapshot";   /* 마지막으로 받아온 서버 값 — 첫 화면을 바로 그리는 용도 */
-var LABEL = { full:"전일정 참석", day1:"1일차 참석", late:"후발대 참석", tbd:"확인 중", no:"불참" };
-var SHORT = { full:"전일정", day1:"1일차", late:"후발대", tbd:"확인 중", no:"불참" };
+var LABEL = { full:"전일정 참석", day1:"부분 참석", late:"후발대 참석", tbd:"확인 중", no:"불참" };
+var SHORT = { full:"전일정", day1:"부분", late:"후발대", tbd:"확인 중", no:"불참" };
 var ORDER = ["full","day1","late","tbd","no"];
 var GCLS  = { full:"g1", day1:"g2", late:"g5", tbd:"g3", no:"g4" };
 var CCLS  = { full:"c-f", day1:"c-p", late:"c-l", tbd:"c-t", no:"c-x" };
@@ -659,7 +659,7 @@ var BASE = [
  /* 전일정 9명 */
  {id:1, name:"김아래미", group:"위원장",   org:"서울여자대학교",              title:"교수",         status:"full", transport:"기차", train:"g1", back:"u2", room:"rm", shirt:"95"},
  {id:2, name:"이상현",   group:"부위원장", org:"신목종합사회복지관",          title:"부장",         status:"full", transport:"기차", train:"g2", back:"u1", room:"r1a", shirt:"105"},
- {id:3, name:"김유리",   group:"운영위원", org:"서대문구재가노인복지기관",    title:"관장",         status:"full", transport:"기차", train:"g2", back:"x2", room:"none", shirt:"105", note:"숙박 없이 자율 이동"},
+ {id:3, name:"김유리",   group:"운영위원", org:"서대문구재가노인복지기관",    title:"관장",         status:"day1", transport:"기차", train:"g2", back:"x1", room:"none", shirt:"105", note:"숙박 없이 자체 이동"},
  {id:4, name:"권민지",   group:"전문위원", org:"방화11종합사회복지관",        title:"과장",         status:"full", transport:"기차", train:"g2", back:"u1", room:"r1c", shirt:"105"},
  {id:5, name:"송경태",   group:"전문위원", org:"도봉서원종합사회복지관",      title:"과장",         status:"full", transport:"기차", train:"g1", back:"u2", room:"r7", shirt:"105"},
  {id:6, name:"조상우",   group:"전문위원", org:"태화해뜨는샘",                title:"사무국장",     status:"full", transport:"기차", train:"g2", back:"u1", room:"r1b"},
@@ -1085,7 +1085,7 @@ function editor(p){
 
   return '<div class="ed">'+
     '<div class="fr"><label>참석 구분</label><select data-f="status">'+
-      opt("full","전일정 참석",p.status==="full")+opt("day1","1일차 참석",p.status==="day1")+
+      opt("full","전일정 참석",p.status==="full")+opt("day1","부분 참석",p.status==="day1")+
       opt("late","후발대 참석",p.status==="late")+opt("tbd","확인 중",p.status==="tbd")+
       opt("no","불참",p.status==="no")+'</select></div>'+
 

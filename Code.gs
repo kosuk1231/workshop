@@ -1,171 +1,195 @@
 /**
- * 2026 정책위원회 워크숍 참석 회신 백엔드
+ * 2026 정책위원회 워크숍 — 참석자 명단 연동
  * 서울특별시사회복지사협회 정책위원회
  *
- * doGet  : 회신 전체를 JSON으로 반환
- * doPost : 회신 1건을 id 기준으로 저장(있으면 갱신, 없으면 추가)
+ * 이 스크립트는 「참석자 명단」 스프레드시트를 그대로 읽고 씁니다.
+ * 별도의 응답 시트를 만들지 않습니다. 명단 시트가 유일한 원본입니다.
  *
- * 열 위치를 번호로 찾지 않고 머리글 이름으로 찾습니다.
- * 열 순서를 바꾸거나 예전 시트를 그대로 써도 값이 밀리지 않습니다.
- * 없는 머리글은 실행할 때 자동으로 뒤에 추가됩니다.
+ *   doGet  : 명단을 읽어 JSON으로 반환
+ *   doPost : 페이지에서 고친 내용을 명단 시트의 해당 행에 덮어씀
  *
- * 배포: 배포 > 새 배포 > 유형 '웹 앱'
- *   - 실행 계정: 나
- *   - 액세스 권한: 모든 사용자
- *   배포 후 /exec 로 끝나는 URL을 index.html 의 API_URL 에 넣습니다.
+ * 건드리는 열은 참석구분 · 이동방법 · 기차시간(하행/상행) · 숙소 · 티셔츠 여섯 개뿐입니다.
+ * 연락처와 성별은 읽지도 쓰지도 않습니다.
+ *
+ * 배포: 배포 > 새 배포 > 웹 앱 / 실행 계정: 나 / 액세스 권한: 모든 사용자
  */
 
-// 스크립트를 시트에 연결해 만들었으면 비워 두세요.
-var SHEET_ID = '';
+// 참석자 명단 스프레드시트 ID (주소의 /d/ 와 /edit 사이 문자열)
+var SHEET_ID = '1H9hUU8555xnxUlGQ47j9QSLF--BYF4PqhDdjy_QDAP4';
 
-var SHEET_NAME = '응답';
-
-/* 머리글 이름 = 이 목록이 기준입니다. 순서를 바꿔도 동작합니다. */
-var H = {
-  at:         '타임스탬프',
-  id:         'id',
-  name:       '이름',
-  status:     '참석여부',
-  day:        '도착일',
-  transport:  '교통편',
-  trainLabel: '열차',
-  train:      '열차ID',
-  from:       '승차역',
-  dep:        '열차출발',
-  to:         '도착역',
-  arr:        '도착시각',
-  back:       '복귀ID',
-  backLabel:  '복귀',
-  room:       '숙소ID',
-  roomLabel:  '숙소',
-  shirt:      '티셔츠',
-  note:       '메모'
+/* 성명 → 페이지 id. 페이지의 BASE 와 같아야 합니다. */
+var IDS = {
+  '김아래미':1, '이상현':2, '김유리':3, '권민지':4, '송경태':5, '조상우':6,
+  '고석우':7, '이재중':8, '이상표':9, '김민재':10, '황흥기':11, '정선영':12,
+  '노혜진':13, '심휘선':14, '정순영':15, '오순희':16, '조소연':17
 };
 
-var HEADERS = [
-  H.at, H.id, H.name, H.status, H.day, H.transport,
-  H.trainLabel, H.train, H.from, H.dep, H.to, H.arr, H.backLabel, H.back, H.roomLabel, H.room, H.shirt, H.note
-];
+/* 하행 열차 출발시각 → 편성 id */
+var DEP_TO_TRAIN = {
+  '09:14':'g1', '09:27':'g2',
+  '15:28':'1207', '16:25':'1283', '17:52':'1209', '18:21':'1285', '20:43':'1287'
+};
 
-/* 시각처럼 보이는 값이 날짜로 바뀌지 않게 텍스트 서식으로 둘 열 */
-var TEXT_COLS = [H.dep, H.arr, H.train, H.back, H.room];
+/* 시트에 다시 적을 때 쓰는 문구 */
+var STATUS_TXT = { full:'전일정', day1:'부분 참석', late:'후발대 참석', tbd:'확인 중', no:'불참' };
+var DOWN_TXT = {
+  g1:'용산 09:14→광천 11:36', g2:'영등포 09:27→광천 11:36',
+  '1207':'용산 15:28→광천 17:50', '1283':'용산 16:25→광천 18:55',
+  '1209':'용산 17:52→광천 20:13', '1285':'용산 18:21→광천 20:54',
+  '1287':'용산 20:43→광천 23:11'
+};
+var UP_TXT = {
+  u1:'광천 13:14 → 영등포 15:36', u2:'광천 13:14 → 용산 15:49',
+  x1:'1일차만 참석', x2:'자체 이동', x3:'홍성 잔류'
+};
+var ROOM_TXT = { r7:'7인실', r1a:'1인실_1', r1b:'1인실_2', r1c:'1인실_3', rm:'모듈', none:'-' };
+var ROOM_ID = { '7인실':'r7', '1인실_1':'r1a', '1인실_2':'r1b', '1인실_3':'r1c', '모듈':'rm' };
 
-var ALLOWED = { full: 1, day1: 1, late: 1, tbd: 1, no: 1 };
+var ALLOWED = { full:1, day1:1, late:1, tbd:1, no:1 };
 
-/* ─────────────────────────── 시트 ─────────────────────────── */
+/* ───────────────────── 시트 찾기 ───────────────────── */
 
-function getSheet_() {
-  var ss = SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet();
-  if (!ss) throw new Error('스프레드시트를 찾을 수 없습니다. SHEET_ID를 확인하세요.');
+/** 머리글에 성명·참석구분이 있는 시트와 그 머리글 행을 찾는다 */
+function roster_() {
+  var ss = SpreadsheetApp.openById(SHEET_ID);
+  var sheets = ss.getSheets();
 
-  var sh = ss.getSheetByName(SHEET_NAME);
-  if (!sh) sh = ss.insertSheet(SHEET_NAME);
+  for (var i = 0; i < sheets.length; i++) {
+    var sh = sheets[i];
+    var lastRow = sh.getLastRow(), lastCol = sh.getLastColumn();
+    if (lastRow < 1 || lastCol < 1) continue;
 
-  if (sh.getLastRow() === 0) {
-    sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]).setFontWeight('bold');
-    sh.setFrozenRows(1);
-    sh.setColumnWidth(1, 150);
-    sh.setColumnWidth(3, 90);
+    var scan = Math.min(lastRow, 12);
+    var vals = sh.getRange(1, 1, scan, lastCol).getValues();
+    for (var r = 0; r < vals.length; r++) {
+      var head = [];
+      for (var c = 0; c < vals[r].length; c++) head.push(String(vals[r][c]).trim());
+      if (head.indexOf('성명') >= 0 && head.indexOf('참석구분') >= 0) {
+        return { sheet: sh, headRow: r + 1, head: head, col: cols_(head), width: lastCol };
+      }
+    }
   }
-
-  migrate_(sh);
-  return sh;
+  throw new Error('참석자 명단 시트를 찾지 못했습니다. 머리글에 성명·참석구분이 있어야 합니다.');
 }
 
-/** 머리글 이름 → 열 번호 */
-function headerMap_(sh) {
-  var width = Math.max(sh.getLastColumn(), 1);
-  var hdr = sh.getRange(1, 1, 1, width).getValues()[0];
-  var map = {};
-  for (var i = 0; i < hdr.length; i++) {
-    var k = String(hdr[i]).trim();
-    if (k) map[k] = i + 1;
+function cols_(head) {
+  var c = {};
+  for (var i = 0; i < head.length; i++) {
+    var h = head[i];
+    if (h === '성명') c.name = i + 1;
+    else if (h === '참석구분') c.status = i + 1;
+    else if (h === '이동방법') c.move = i + 1;
+    else if (h === '숙소') c.room = i + 1;
+    else if (h === '티셔츠') c.shirt = i + 1;
+    else if (h.indexOf('기차시간') === 0) {
+      if (!c.down) c.down = i + 1;
+      else if (!c.up) c.up = i + 1;
+    }
   }
-  return map;
+  return c;
 }
 
-/** 빠진 머리글을 뒤에 추가하고 텍스트 서식을 걸어 둔다 */
-function migrate_(sh) {
-  var map = headerMap_(sh);
-  var add = [];
-  for (var i = 0; i < HEADERS.length; i++) {
-    if (!map[HEADERS[i]]) add.push(HEADERS[i]);
+/* ───────────────────── 값 해석 ───────────────────── */
+
+function txt_(v) {
+  if (v instanceof Date) {
+    return ('0' + v.getHours()).slice(-2) + ':' + ('0' + v.getMinutes()).slice(-2);
   }
-  if (add.length) {
-    var start = sh.getLastColumn() + 1;
-    var need = start + add.length - 1;
-    if (sh.getMaxColumns() < need) sh.insertColumnsAfter(sh.getMaxColumns(), need - sh.getMaxColumns());
-    sh.getRange(1, start, 1, add.length).setValues([add]).setFontWeight('bold');
-    map = headerMap_(sh);
-  }
-  for (var j = 0; j < TEXT_COLS.length; j++) {
-    var c = map[TEXT_COLS[j]];
-    if (c) sh.getRange(1, c, sh.getMaxRows(), 1).setNumberFormat('@');
-  }
-  return map;
+  return v === null || v === undefined ? '' : String(v).trim();
+}
+
+/** 문자열에서 HH:MM 을 모두 뽑는다 */
+function times_(v) {
+  var out = [], re = /(\d{1,2}):(\d{2})/g, m;
+  while ((m = re.exec(String(v)))) out.push(('0' + m[1]).slice(-2) + ':' + m[2]);
+  return out;
+}
+
+function parseStatus_(v) {
+  if (!v) return 'tbd';
+  if (v.indexOf('전일정') >= 0) return 'full';
+  if (v.indexOf('후발') >= 0) return 'late';
+  if (v.indexOf('불참') >= 0) return 'no';
+  if (v.indexOf('부분') >= 0 || v.indexOf('1일차') >= 0) return 'day1';
+  return 'tbd';
+}
+
+function parseMove_(v) {
+  if (!v) return '';
+  if (v.indexOf('자차') >= 0) return '자차';
+  if (v.indexOf('기차') >= 0) return '기차';
+  return '기타';
+}
+
+/** 하행 칸 → { train, arr } */
+function parseDown_(v) {
+  var t = times_(v);
+  if (v.indexOf('도착') >= 0) return { train: '', arr: t.length ? t[0] : '' };
+  if (!t.length) return { train: '', arr: '' };
+  return { train: DEP_TO_TRAIN[t[0]] || '', arr: '' };
+}
+
+/** 상행 칸 → 복귀 id */
+function parseUp_(v) {
+  if (!v) return '';
+  if (v.indexOf('잔류') >= 0) return 'x3';
+  if (v.indexOf('1일차만') >= 0) return 'x1';
+  if (v.indexOf('자체') >= 0 || v.indexOf('자차') >= 0) return 'x2';
+  if (v.indexOf('영등포') >= 0) return 'u1';
+  if (v.indexOf('용산') >= 0) return 'u2';
+  return '';
+}
+
+function parseRoom_(v) {
+  var s = String(v).replace(/\s/g, '');
+  if (ROOM_ID[s]) return ROOM_ID[s];
+  if (!s || s === '-' || s === '–' || s === '—') return 'none';
+  return '';
+}
+
+function parseShirt_(v) {
+  var s = String(v).trim();
+  return (s === '95' || s === '100' || s === '105') ? s : '';
 }
 
 function json_(obj) {
-  return ContentService
-    .createTextOutput(JSON.stringify(obj))
+  return ContentService.createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-function asTime_(v) {
-  if (v instanceof Date) {
-    var h = ('0' + v.getHours()).slice(-2);
-    var m = ('0' + v.getMinutes()).slice(-2);
-    return h + ':' + m;
-  }
-  return v === null || v === undefined ? '' : String(v).trim();
-}
-
-function asText_(v) {
-  return v === null || v === undefined ? '' : String(v).trim();
-}
-
-/* ─────────────────────────── 조회 ─────────────────────────── */
+/* ───────────────────── 조회 ───────────────────── */
 
 function doGet() {
   try {
-    var sh = getSheet_();
-    var map = headerMap_(sh);
+    var R = roster_();
+    var sh = R.sheet, col = R.col;
+    var first = R.headRow + 1;
     var last = sh.getLastRow();
     var rows = [];
 
-    if (last > 1) {
-      var width = sh.getLastColumn();
-      var values = sh.getRange(2, 1, last - 1, width).getValues();
+    if (last >= first && col.name) {
+      var vals = sh.getRange(first, 1, last - first + 1, R.width).getValues();
+      for (var i = 0; i < vals.length; i++) {
+        var r = vals[i];
+        var get = function (c) { return c ? txt_(r[c - 1]) : ''; };
 
-      for (var i = 0; i < values.length; i++) {
-        var r = values[i];
-        var get = function (key) {
-          var c = map[key];
-          return c ? r[c - 1] : '';
-        };
-        var id = Number(get(H.id));
-        if (!id) continue;
-        var st = asText_(get(H.status));
-        var at = get(H.at);
+        var name = get(col.name);
+        if (!name || !IDS[name]) continue;
+
+        var status = parseStatus_(get(col.status));
+        var down = parseDown_(get(col.down));
+
         rows.push({
-          id: id,
-          name: asText_(get(H.name)),
-          status: ALLOWED[st] ? st : 'tbd',
-          day: asText_(get(H.day)),
-          transport: asText_(get(H.transport)),
-          train: asText_(get(H.train)),
-          trainLabel: asText_(get(H.trainLabel)),
-          from: asText_(get(H.from)),
-          dep: asTime_(get(H.dep)),
-          to: asText_(get(H.to)),
-          arr: asTime_(get(H.arr)),
-          back: asText_(get(H.back)),
-          backLabel: asText_(get(H.backLabel)),
-          room: asText_(get(H.room)),
-          roomLabel: asText_(get(H.roomLabel)),
-          shirt: asText_(get(H.shirt)),
-          note: asText_(get(H.note)),
-          at: at instanceof Date ? at.toISOString() : asText_(at)
+          id: IDS[name],
+          name: name,
+          status: status,
+          transport: parseMove_(get(col.move)),
+          train: down.train,
+          arr: down.arr,
+          back: parseUp_(get(col.up)),
+          room: parseRoom_(get(col.room)),
+          shirt: parseShirt_(get(col.shirt)),
+          note: ''
         });
       }
     }
@@ -176,7 +200,7 @@ function doGet() {
   }
 }
 
-/* ─────────────────────────── 저장 ─────────────────────────── */
+/* ───────────────────── 저장 ───────────────────── */
 
 function doPost(e) {
   var lock = LockService.getScriptLock();
@@ -188,57 +212,62 @@ function doPost(e) {
     }
 
     var d = JSON.parse(e.postData.contents);
-    var id = Number(d.id);
-    if (!id) return json_({ ok: false, error: 'id가 없습니다.' });
-    if (!ALLOWED[d.status]) return json_({ ok: false, error: '참석여부 값이 올바르지 않습니다: ' + d.status });
+    var name = txt_(d.name);
+    if (!name) return json_({ ok: false, error: '성명이 없습니다.' });
+    if (!ALLOWED[d.status]) return json_({ ok: false, error: '참석구분 값이 올바르지 않습니다: ' + d.status });
 
-    var sh = getSheet_();
-    var map = headerMap_(sh);
-    var width = sh.getLastColumn();
-
-    var idCol = map[H.id];
+    var R = roster_();
+    var sh = R.sheet, col = R.col;
+    var first = R.headRow + 1;
     var last = sh.getLastRow();
+
+    // 성명으로 행 찾기
     var target = 0;
-    if (idCol && last > 1) {
-      var ids = sh.getRange(2, idCol, last - 1, 1).getValues();
-      for (var i = 0; i < ids.length; i++) {
-        if (Number(ids[i][0]) === id) { target = i + 2; break; }
+    if (last >= first && col.name) {
+      var names = sh.getRange(first, col.name, last - first + 1, 1).getValues();
+      for (var i = 0; i < names.length; i++) {
+        if (txt_(names[i][0]) === name) { target = first + i; break; }
       }
     }
-    var isNew = !target;
-    if (isNew) target = last + 1;
+    if (!target) {
+      target = last + 1;
+      if (col.name) sh.getRange(target, col.name).setValue(name);
+    }
 
-    var row = isNew ? [] : sh.getRange(target, 1, 1, width).getValues()[0];
-    for (var k = 0; k < width; k++) if (row[k] === undefined || row[k] === null) row[k] = '';
-
-    var put = function (key, val) {
-      var c = map[key];
-      if (c) row[c - 1] = val;
+    var put = function (c, val) {
+      if (!c) return;
+      sh.getRange(target, c).setNumberFormat('@').setValue(val);
     };
 
-    put(H.at, new Date());
-    put(H.id, id);
-    put(H.name, asText_(d.name));
-    put(H.status, asText_(d.status));
-    put(H.day, asText_(d.day));
-    put(H.transport, asText_(d.transport));
-    put(H.train, asText_(d.train));
-    put(H.trainLabel, asText_(d.trainLabel));
-    put(H.from, asText_(d.from));
-    put(H.dep, asTime_(d.dep));
-    put(H.to, asText_(d.to));
-    put(H.arr, asTime_(d.arr));
-    put(H.back, asText_(d.back));
-    put(H.backLabel, asText_(d.backLabel));
-    put(H.room, asText_(d.room));
-    put(H.roomLabel, asText_(d.roomLabel));
-    put(H.shirt, asText_(d.shirt));
-    put(H.note, asText_(d.note));
+    var joins = (d.status === 'full' || d.status === 'day1' || d.status === 'late');
 
-    sh.getRange(target, 1, 1, width).setValues([row]);
+    put(col.status, STATUS_TXT[d.status] || '');
+
+    if (!joins) {
+      put(col.move, '');
+      put(col.down, '');
+      put(col.up, '');
+      put(col.room, '');
+      put(col.shirt, '');
+    } else {
+      var move = d.transport === '자차' ? '자차'
+               : d.transport === '기차' ? (d.train === 'g1' || d.train === 'g2' ? '기차(단체)' : '기차(개별)')
+               : txt_(d.transport);
+      put(col.move, move);
+
+      if (d.transport === '자차' || d.transport === '기타') {
+        put(col.down, txt_(d.arr) ? txt_(d.arr) + ' 도착 예정' : '');
+      } else {
+        put(col.down, DOWN_TXT[d.train] || '');
+      }
+
+      put(col.up, UP_TXT[d.back] || '');
+      put(col.room, ROOM_TXT[d.room] !== undefined ? ROOM_TXT[d.room] : '');
+      put(col.shirt, txt_(d.shirt) || '미정');
+    }
+
     SpreadsheetApp.flush();
-
-    return json_({ ok: true, id: id, row: target, isNew: isNew });
+    return json_({ ok: true, name: name, row: target });
   } catch (err) {
     return json_({ ok: false, error: String(err) });
   } finally {
@@ -246,124 +275,27 @@ function doPost(e) {
   }
 }
 
-/* ─────────────────────────── 점검용 ─────────────────────────── */
+/* ───────────────────── 점검 ───────────────────── */
 
-/** 처음 한 번, 또는 코드를 새로 붙여넣은 뒤 실행하세요. */
+/** 명단 시트를 제대로 찾는지, 열이 다 잡히는지 확인 */
 function setup() {
-  var sh = getSheet_();
-  var map = headerMap_(sh);
-  var missing = [];
-  for (var i = 0; i < HEADERS.length; i++) if (!map[HEADERS[i]]) missing.push(HEADERS[i]);
-  Logger.log('시트: ' + sh.getParent().getName() + ' / ' + sh.getName());
-  Logger.log('머리글: ' + (missing.length ? '누락 ' + missing.join(', ') : '정상'));
+  var R = roster_();
+  Logger.log('스프레드시트: ' + R.sheet.getParent().getName());
+  Logger.log('시트 탭: ' + R.sheet.getName() + ' / 머리글 행: ' + R.headRow);
+  var need = ['name', 'status', 'move', 'down', 'up', 'room', 'shirt'];
+  var miss = [];
+  for (var i = 0; i < need.length; i++) if (!R.col[need[i]]) miss.push(need[i]);
+  Logger.log('열 인식: ' + (miss.length ? '누락 ' + miss.join(', ') : '정상 (전부 찾음)'));
+  Logger.log(JSON.stringify(R.col));
 }
 
-/**
- * 회신을 전부 지우고 처음 상태로 되돌립니다. (머리글은 남습니다)
- * 테스트 데이터가 섞여 값이 꼬였을 때 한 번 실행하세요.
- */
-function reset() {
-  var sh = getSheet_();
-  var last = sh.getLastRow();
-  if (last > 1) {
-    sh.getRange(2, 1, last - 1, sh.getLastColumn()).clearContent();
-    Logger.log('회신 ' + (last - 1) + '건을 지웠습니다.');
-  } else {
-    Logger.log('지울 회신이 없습니다.');
+/** 명단을 읽어서 페이지에 넘길 값이 제대로 나오는지 확인 */
+function preview() {
+  var res = JSON.parse(doGet().getContent());
+  if (!res.ok) { Logger.log('실패: ' + res.error); return; }
+  Logger.log('읽은 인원: ' + res.count + '명');
+  for (var i = 0; i < res.rows.length; i++) {
+    var r = res.rows[i];
+    Logger.log([r.id, r.name, r.status, r.transport, r.train || r.arr, r.back, r.room, r.shirt].join(' | '));
   }
-  Logger.log('페이지에서 새로고침을 누르면 명단이 처음 상태로 돌아옵니다.');
-}
-
-/** 특정 위원의 회신 한 건만 지웁니다. removeOne(12) 처럼 id를 넣어 실행하세요. */
-function removeOne(id) {
-  var sh = getSheet_();
-  var map = headerMap_(sh);
-  var last = sh.getLastRow();
-  if (!map[H.id] || last < 2) { Logger.log('회신이 없습니다.'); return; }
-  var ids = sh.getRange(2, map[H.id], last - 1, 1).getValues();
-  for (var i = 0; i < ids.length; i++) {
-    if (Number(ids[i][0]) === Number(id)) {
-      sh.deleteRow(i + 2);
-      Logger.log('id ' + id + ' 회신을 지웠습니다.');
-      return;
-    }
-  }
-  Logger.log('id ' + id + ' 회신을 찾지 못했습니다.');
-}
-
-/**
- * 페이지의 확정 명단(index.html 의 BASE)을 시트에 그대로 써 넣습니다.
- * reset() 으로 비운 뒤 실행하면 시트와 페이지가 완전히 같아집니다.
- * 이후 위원들이 수정하는 내용만 이 위에 덮어써집니다.
- */
-function seedFromPage() {
-  var G1 = { train:'g1', trainLabel:'용산역 09:14 → 광천 11:36', from:'용산역',   dep:'09:14', to:'광천역', arr:'11:36' };
-  var G2 = { train:'g2', trainLabel:'영등포역 09:27 → 광천 11:36', from:'영등포역', dep:'09:27', to:'광천역', arr:'11:36' };
-  var L  = { train:'1285', trainLabel:'무궁화 1285 · 용산 18:21 → 광천 20:54', from:'용산역', dep:'18:21', to:'광천역', arr:'20:54' };
-  var U1 = { back:'u1', backLabel:'광천 13:14 → 영등포 15:36' };
-  var U2 = { back:'u2', backLabel:'광천 13:14 → 용산 15:49' };
-  var X1 = { back:'x1', backLabel:'1일차만 참석 · 개별 귀가' };
-  var X2 = { back:'x2', backLabel:'자체 이동' };
-  var X3 = { back:'x3', backLabel:'현지 잔류' };
-  var RM = { r7:'7인실', r1a:'1인실_1', r1b:'1인실_2', r1c:'1인실_3', rm:'모듈', none:'숙박 없음' };
-
-  function mk(id, name, status, transport, go, back, room, shirt, note) {
-    var o = { id:id, name:name, status:status, transport:transport,
-              room:room || '', roomLabel:RM[room] || '', shirt:shirt || '', note:note || '' };
-    if (go)   for (var k in go)   o[k] = go[k];
-    if (back) for (var b in back) o[b] = back[b];
-    return o;
-  }
-
-  var list = [
-    mk(1,  '김아래미', 'full', '기차', G1, U2, 'rm',   '95'),
-    mk(2,  '이상현',   'full', '기차', G2, U1, 'r1a',  '105'),
-    mk(3,  '김유리',   'full', '기차', G2, X2, 'none', '105', '숙박 없이 자율 이동'),
-    mk(4,  '권민지',   'full', '기차', G2, U1, 'r1c',  '105'),
-    mk(5,  '송경태',   'full', '기차', G1, U2, 'r7',   '105'),
-    mk(6,  '조상우',   'full', '기차', G2, U1, 'r1b',  ''),
-    mk(7,  '고석우',   'full', '기차', G2, X3, 'r7',   '105', '차량 운행 · 홍성 잔류'),
-    mk(8,  '이재중',   'full', '기차', G1, U2, 'r7',   '105', '차량 운행'),
-    mk(15, '정순영',   'full', '기차', G2, U1, 'r1a',  ''),
-    mk(9,  '이상표',   'day1', '자차', { arr:'12:00' }, X1, 'none', '105'),
-    mk(10, '김민재',   'day1', '자차', { arr:'12:00' }, X1, 'none', ''),
-    mk(12, '정선영',   'late', '기차', L, U1, 'r1c',  '100'),
-    mk(13, '노혜진',   'late', '기차', L, U2, 'rm',   ''),
-    mk(14, '심휘선',   'late', '기차', L, U2, 'rm',   ''),
-    mk(11, '황흥기',   'late', '자차', { arr:'20:30' }, X2, 'r1b', '105'),
-    mk(16, '오순희',   'no',   '',     null, null, '', ''),
-    mk(17, '조소연',   'no',   '',     null, null, '', '')
-  ];
-
-  for (var i = 0; i < list.length; i++) {
-    doPost({ postData: { contents: JSON.stringify(list[i]) } });
-  }
-  Logger.log(list.length + '건을 시트에 기록했습니다. 페이지에서 새로고침을 누르세요.');
-}
-
-/** 저장한 값이 그대로 돌아오는지 확인 */
-function selfTest() {
-  var sent = {
-    id: 999, name: '테스트', status: 'late', transport: '기차',
-    train: '1283', trainLabel: '무궁화 1283 · 용산 16:25 → 광천 18:55',
-    from: '용산역', dep: '16:25', to: '광천역', arr: '18:55',
-    back: 'u1', backLabel: '광천 13:14 → 영등포 15:36',
-    room: 'r1c', roomLabel: '1인실_3', shirt: '100', note: '자체 점검'
-  };
-  Logger.log('저장: ' + doPost({ postData: { contents: JSON.stringify(sent) } }).getContent());
-
-  var back = JSON.parse(doGet().getContent());
-  var hit = null;
-  for (var i = 0; i < back.rows.length; i++) if (back.rows[i].id === 999) hit = back.rows[i];
-  if (!hit) { Logger.log('실패: 999번을 다시 읽지 못했습니다.'); return; }
-
-  var keys = ['status', 'transport', 'train', 'from', 'dep', 'to', 'arr', 'back', 'room', 'shirt', 'note'];
-  var bad = [];
-  for (var j = 0; j < keys.length; j++) {
-    if (String(hit[keys[j]]) !== String(sent[keys[j]])) {
-      bad.push(keys[j] + ': 보냄 "' + sent[keys[j]] + '" / 읽음 "' + hit[keys[j]] + '"');
-    }
-  }
-  Logger.log(bad.length ? '값이 다릅니다\n' + bad.join('\n') : '왕복 확인 정상 — 값이 그대로 돌아왔습니다.');
-  Logger.log('점검이 끝나면 시트에서 id 999 행을 지우세요.');
 }
