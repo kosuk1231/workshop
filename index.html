@@ -618,12 +618,13 @@ var CARS = [
 
 /* 숙소 배정 — 홍주살이 */
 var ROOMS = [
-  {id:"r7",  name:"7인실",   sex:"남"},
-  {id:"r1a", name:"1인실_1", sex:"남"},
-  {id:"r1b", name:"1인실_2", sex:"남"},
-  {id:"r1c", name:"1인실_3", sex:"여"},
-  {id:"rm",  name:"모듈",    sex:"여"},
-  {id:"none",name:"숙박 없음", sex:""}
+  {id:"r7",  name:"7인실",        sex:"남"},
+  {id:"r1a", name:"1인실_1",      sex:"남"},
+  {id:"r1b", name:"1인실_2",      sex:"남"},
+  {id:"r1c", name:"1인실_3",      sex:"남"},
+  {id:"r3",  name:"3인실(오누이)", sex:"여"},
+  {id:"rm",  name:"모듈러",       sex:"여"},
+  {id:"none",name:"숙박 없음",     sex:""}
 ];
 function roomOf(id){
   if(!id) return null;
@@ -664,18 +665,18 @@ var BASE = [
  {id:1,  name:"김아래미", group:"위원장",   org:"서울여자대학교",              title:"교수",         status:"full", transport:"기차", train:"g1",   back:"u2", room:"rm",   shirt:"95"},
  {id:2,  name:"이상현",   group:"부위원장", org:"신목종합사회복지관",          title:"부장",         status:"full", transport:"기차", train:"g2",   back:"u1", room:"r1a",  shirt:"105"},
  {id:3,  name:"김유리",   group:"운영위원", org:"서대문구재가노인복지기관",    title:"관장",         status:"day1", transport:"기차", train:"g2",   back:"x1", room:"none", shirt:"105", note:"숙박 없이 자체 이동"},
- {id:4,  name:"권민지",   group:"전문위원", org:"방화11종합사회복지관",        title:"과장",         status:"full", transport:"기차", train:"g2",   back:"u1", room:"r1c",  shirt:"105"},
+ {id:4,  name:"권민지",   group:"전문위원", org:"방화11종합사회복지관",        title:"과장",         status:"full", transport:"기차", train:"g2",   back:"u1", room:"r3",  shirt:"105"},
  {id:5,  name:"송경태",   group:"전문위원", org:"도봉서원종합사회복지관",      title:"과장",         status:"full", transport:"기차", train:"g1",   back:"u2", room:"r7",   shirt:"105"},
  {id:6,  name:"조상우",   group:"전문위원", org:"태화해뜨는샘",                title:"사무국장",     status:"full", transport:"기차", train:"g2",   back:"u1", room:"r1b"},
  {id:7,  name:"고석우",   group:"협회",     org:"서울특별시사회복지사협회",    title:"과장",         status:"full", transport:"기차", train:"g2",   back:"x3", room:"r7",   shirt:"105", note:"차량 운행 · 홍성 잔류"},
  {id:8,  name:"이재중",   group:"협회",     org:"서울특별시사회복지사협회",    title:"사회복지사",   status:"full", transport:"기차", train:"g1",   back:"u2", room:"r7",   shirt:"105", note:"차량 운행"},
  {id:9,  name:"이상표",   group:"운영위원", org:"시립고덕양로원",              title:"원장",         status:"day1", transport:"자차", arr:"12:00",  back:"x1", room:"none", shirt:"105"},
  {id:10, name:"김민재",   group:"운영위원", org:"파라다이스복지재단",          title:"매니저(과장)", status:"day1", transport:"자차", arr:"12:00",  back:"x1", room:"none"},
- {id:11, name:"황흥기",   group:"전문위원", org:"넥스트임팩트",                title:"대표",         status:"late", transport:"자차", arr:"20:30",  back:"x2", room:"r1b",  shirt:"105"},
- {id:12, name:"정선영",   group:"전문위원", org:"신월종합사회복지관",          title:"부장",         status:"late", transport:"기차", train:"1285", back:"u1", room:"r1c",  shirt:"100"},
+ {id:11, name:"황흥기",   group:"전문위원", org:"넥스트임팩트",                title:"대표",         status:"late", transport:"자차", arr:"20:30",  back:"x2", room:"r7",  shirt:"105"},
+ {id:12, name:"정선영",   group:"전문위원", org:"신월종합사회복지관",          title:"부장",         status:"late", transport:"기차", train:"1285", back:"u1", room:"r3",  shirt:"100"},
  {id:13, name:"노혜진",   group:"전문위원", org:"강서대학교",                  title:"교수",         status:"late", transport:"기차", train:"1285", back:"u2", room:"rm"},
  {id:14, name:"심휘선",   group:"전문위원", org:"종로노인종합복지관",          title:"관장",         status:"late", transport:"기차", train:"1285", back:"u2", room:"rm"},
- {id:15, name:"정순영",   group:"운영위원", org:"관악구지역사회보장협의체",    title:"사무국장",     status:"full", transport:"기차", train:"g2",   back:"u1", room:"r1a"},
+ {id:15, name:"정순영",   group:"운영위원", org:"관악구지역사회보장협의체",    title:"사무국장",     status:"full", transport:"기차", train:"g2",   back:"u1", room:"r1c"},
  {id:16, name:"오순희",   group:"전문위원", org:"양천거점형 우리동네키움센터", title:"센터장",       status:"no"},
  {id:17, name:"조소연",   group:"전문위원", org:"사회복지연구소 마실",         title:"공동대표",     status:"no"}
 ];
